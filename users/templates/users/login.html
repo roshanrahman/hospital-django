@@ -1,0 +1,21 @@
+{% extends 'users/base.html' %} {% block title %} Login {% endblock title %}<!---->
+{% block body %}
+
+<div class="header primary-bg">
+  <h1>Login</h1>
+  <span>Not a user? <a href="{% url 'register' %}">Create account</a></span>
+</div>
+
+<form action="{% url 'login' %}" method="post">
+  {% csrf_token %}
+  <div class="field">
+    <input type="email" name="email" placeholder="Email" required autofocus />
+  </div>
+  <div class="field">
+    <input type="password" name="password" placeholder="Password" required />
+  </div>
+  <div class="field">
+    <button type="submit" class="btn primary flex-end">Submit</button>
+  </div>
+</form>
+{% endblock body %}

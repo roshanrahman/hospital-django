@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <title>
+      {% block title %}Hospital Management{% endblock title %}
+    </title>
+  </head>
+  <body>
+    <div class="nav-bar">
+      <div class="pseudomargin"></div>
+      <h1>Welcome, {{ user.first_name }}</h1>
+      <div class="spacer"></div>
+      <button class="btn outlined bg">Log Out</button>
+      <div class="pseudomargin"></div>
+    </div>
+    <main></main>
+    {% for message in messages %}
+    <div class="alert">
+      <span> {{ message }}</span>
+    </div>
+    {% endfor %} {% block body %} {% endblock body %}
+
+    <script>
+
+      {% block script %}
+
+
+      {% endblock script %}
+    </script>
+  </body>
+</html>

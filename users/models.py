@@ -12,10 +12,12 @@ class UserProfile(AbstractUser):
     username = None
     email = models.EmailField('Email Address', unique=True)
     first_name = models.CharField('First Name', max_length=50)
-    last_name = models.CharField('Last Name', max_length=50)
+    last_name = models.CharField(
+        'Last Name', max_length=50, null=True, default='')
     mobile = models.CharField('Mobile Number', max_length=13)
     user_type = models.CharField(
         'User type', max_length=10,  choices=USER_TYPE_CHOICES)
+    status = models.CharField(max_length=255, blank=True, null=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserProfileManager()

@@ -1,16 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1>Register new account</h1>
-    <form action="{% url 'register' %}" method="POST">
-      {% csrf_token %} {{ register_form }}
-      <button type="submit">Submit</button>
-    </form>
-  </body>
-</html>
+{% extends 'users/base.html' %} {% block title %} Sign Up {% endblock title %}
+{% block body %}
+
+<div class="header primary-bg">
+  <h1>Create a new account</h1>
+  <span>Already have an account? <a href="{% url 'login' %}">Login</a></span>
+</div>
+
+<form action="{% url 'register' %}" method="post">
+  {% csrf_token %}
+  <div class="multifield">
+    <div class="field">
+      <span>First name</span>
+      <input type="text" name="first_name" placeholder="First Name" required />
+    </div>
+    <div class="field">
+      <span>Last Name</span>
+      <input type="text" name="second_name" placeholder="Last Name" />
+    </div>
+  </div>
+  <div class="field">
+    <span>Enter your email address. This will be used for login.</span>
+    <input type="email" name="email" placeholder="Email" required />
+  </div>
+  <div class="field">
+    <span>Create a password for your account.</span>
+    <input type="password" name="password" placeholder="Password" required />
+  </div>
+  <div class="field">
+    <span>Enter your mobile number.</span>
+    <input
+      pattern="[0-9]{10}"
+      type="text"
+      name="mobile"
+      maxlength="10"
+      placeholder="Mobile Number"
+      required
+    />
+  </div>
+  <div class="field">
+    <span>Choose the account type</span>
+    <select name="user_type" required>
+      <option value="" disabled selected>Select a user type</option>
+
+      <option value="doctor">Doctor</option>
+      <option value="patient">Patient</option>
+    </select>
+  </div>
+  <div class="field">
+    <button type="submit" class="btn primary flex-end">Submit</button>
+  </div>
+</form>
+
+{% endblock body %}
