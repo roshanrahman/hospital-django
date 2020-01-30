@@ -10,8 +10,8 @@ import requests
 # from .serializers import CreateUserSerializer
 
 
-CLIENT_ID = '<client-id>'
-CLIENT_SECRET = '<client-secret>'
+CLIENT_ID = 'NW2aZXuHafTvo9cva2mdi42UAOrn5yw76s8iBEwZ'
+CLIENT_SECRET = 'ittU4iHxt5Gc4xXPkiPrXuJPC2LCsSVtDIsu4AMceqk9XaHKuitQ6PloqtwpJNq7wNiRJQMJbMta7YoMy1yKBdnUMiPheZ50AbJ2OnM9osE5gpa6igIfFP8Fs5ZTOIrN'
 
 
 @api_view(['POST'])
@@ -93,8 +93,8 @@ def revoke_token(request):
         'http://0.0.0.0:8000/o/revoke_token/',
         data={
             'token': request.data['token'],
-            'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET,
+            'client_id': CLIENT_ID,
         },
     )
     # If it goes well return sucess message (would be empty otherwise)
