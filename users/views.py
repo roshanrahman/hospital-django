@@ -10,12 +10,10 @@ from users.forms import RegisterUserForm
 from users.models import UserProfile
 from oauth2_provider.models import AccessToken
 from django.contrib import messages
+from app.constants import CLIENT_ID, CLIENT_SECRET
 
 
 import requests
-
-CLIENT_ID = 'N76JH5EcYrkHMbx1Gzyl3VSwOE0o3MF3OaRvkxmw'
-CLIENT_SECRET = 'n0ciCy2Ta3f7HpJ9YaqOyKCemsQox1yQiRV5OwAndOiEghLlRdTMeGQrNzRhTB9wBZ4hv5P20Sq980aHM5MpuKbNejkt2Cq2ZryvqLJr24dBVtzW0u5insFaiU1vKz80'
 
 
 def register(request):
@@ -39,9 +37,10 @@ def register(request):
         except IntegrityError as err:
             messages.error(
                 request, 'The email you provided already exists, please use another email')
+            return redirect('users:register')
         except Exception as exp:
             messages.error(request, str(exp))
-            return redirect('register')
+            return redirect('users:register')
         return render(request, 'users/success.html', context=context)
 
 
@@ -63,12 +62,12 @@ def login(request):
             user = user_token.user
             auth_login(request, user,
                        backend='oauth2_provider.backends.OAuth2Backend')
-            index_url = reverse('index')
+            index_url = reverse('app:index')
             response = redirect(index_url)
             return response
         else:
             messages.error(request, 'Invalid Credentials')
-            return redirect('login')
+            return redirect('users:login')
 
     if request.method == 'GET':
         return render(request, 'users/login.html')
@@ -76,5 +75,17 @@ def login(request):
 
 def logout(request):
     auth_logout(request)
-    messages.info("You've been logged out")
-    return redirect(reverse('index'))
+    messages.info(request, "You've been logged out")
+    return redirect(reverse('app:index'))
+
+
+def approval_pending(request):
+    if(request.user and not request.user.account_status == 'pending'):
+        return redirect('app:index')
+    return render(request, 'users/pending.html')
+
+
+def account_blocked(request):
+    if(request.user and not request.user.account_status == 'blocked'):
+        return redirect('app:index')
+    return render(request, 'users/blocked.html')

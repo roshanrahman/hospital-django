@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <title>
+      {% block title %}Hospital Management{% endblock title %}
+    </title>
+  </head>
+  <body>
+    <div class="nav-bar">
+      <div class="pseudomargin"></div>
+      <div class="icon-btn" id="side-nav-toggle">
+        <i class="material-icons">menu</i>
+      </div>
+      <div class="pseudomargin"></div>
+
+      <h1>Welcome, {{ user.first_name }}</h1>
+      <div class="spacer"></div>
+
+      <div class="spacer"></div>
+      <span>{{ user.email }}</span>
+      <div class="pseudomargin"></div>
+      <a href="{% url 'users:logout' %}">
+        <button class="btn outlined bg small">Log Out</button>
+      </a>
+      <div class="pseudomargin"></div>
+    </div>
+    <main></main>
+    {% for message in messages %}
+    <div class="alert">
+      <span> {{ message }}</span>
+    </div>
+    {% endfor %} {% block body %} {% endblock body %}
+    <div class="side-nav" id="side-nav">
+      <div class="side-nav-item clickable" id="side-nav-toggle">
+        <i class="material-icons">arrow_back</i>
+        <span>Close menu</span>
+      </div>
+
+      <div class="vertical-spacer"></div>
+      <div class="side-nav-item clickable" id="dashboard">
+        <i class="material-icons">home</i>
+        <span>Dashboard</span>
+      </div>
+      <div class="side-nav-item clickable" id="new-appointment">
+        <i class="material-icons">add</i>
+        <span>New Appointment</span>
+      </div>
+    </div>
+
+    <script>
+
+      {% block script %}{% endblock script %}
+
+      window.onload = event => {
+        //To toggle selected state of the side nav
+        console.log(selectedItemId)
+        const selectedItem = document.getElementById(selectedItemId);
+        if(!selectedItem) return;
+        selectedItem.classList.add('selected');
+      };
+    </script>
+    <script src="{% static 'interface.js' %}"></script>
+  </body>
+</html>

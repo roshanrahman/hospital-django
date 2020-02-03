@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import path, include, reverse
 from django.http import HttpResponse
 from oauth2_provider.views.generic import ProtectedResourceView
@@ -12,4 +12,22 @@ def index(request):
     context = {
         'user': request.user
     }
-    return render(request, 'app/index.html', context)
+    if not (request.user or request.user.is_authenticated()):
+        return redirect('users:login')
+    if(request.user.account_status == 'pending'):
+        return redirect('users:approval_pending')
+    elif(request.user.account_status == 'blocked'):
+        return redirect('users:account_blocked')
+    if(request.user.user_type == 'patient'):
+        return render(request, 'app/patient/index.html', context)
+    elif(request.user.user_type == 'doctor'):
+        return render(request, 'app/doctor/index.html', context)
+    elif(request.user.user_type == 'admin'):
+        return render(request, 'app/admin/index.html', context)
+
+
+def new_appointment(request):
+    context = {
+        'user': request.user
+    }
+    return render(request, 'app/patient/new.html', context)

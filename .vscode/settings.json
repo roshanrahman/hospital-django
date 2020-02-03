@@ -1,4 +1,6 @@
 {
-    "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true
+  "python.linting.pylintEnabled": false,
+  "python.linting.enabled": true,
+  "python.pythonPath": "/home/roshang/pythonenv/bin/python",
+  "python.linting.flake8Enabled": true
 }

@@ -1,0 +1,2 @@
+CLIENT_ID = 'JwpoHQjrscrdkUxuuuiYEiunAtUL4nuUobc4yA89'
+CLIENT_SECRET = 'MToezoLrdb8a5spKEzhHvi5yotZJq8mOFjhQfF5lonD5j04LTo6Srcuadd2h5SUePeynZeSL79yOiGE1ZkN5R4XXfnFR4V1ehXyttJQNV8BKHaWWM6JuNVkfygiPxmKN'
