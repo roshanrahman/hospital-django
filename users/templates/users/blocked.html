@@ -1,0 +1,20 @@
+{% extends 'users/base.html' %} {% block body %}
+
+<div class="header error-bg">
+  <h1>Account Blocked</h1>
+  <span>Your account is blocked by the administrator</span>
+</div>
+
+<div class="field">
+  <span>
+    Your account has been blocked. You cannot access it until it is unblocked.
+  </span>
+</div>
+
+<div class="field">
+  <a href="{% url 'users:login' %}" class="flex-end">
+    <button type="submit" class="btn ">Go to Login</button>
+  </a>
+</div>
+
+{% endblock body %}

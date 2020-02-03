@@ -3,10 +3,12 @@
 
 <div class="header primary-bg">
   <h1>Login</h1>
-  <span>Not a user? <a href="{% url 'register' %}">Create account</a></span>
+  <span
+    >Not a user? <a href="{% url 'users:register' %}">Create account</a></span
+  >
 </div>
 
-<form action="{% url 'login' %}" method="post">
+<form action="{% url 'users:login' %}" method="post">
   {% csrf_token %}
   <div class="field">
     <input type="email" name="email" placeholder="Email" required autofocus />

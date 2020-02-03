@@ -1,0 +1,38 @@
+/* Color helpers */
+
+.primary {
+  color: #2887e0;
+}
+
+.secondary {
+  color: #2db88e;
+}
+
+.primary-bg {
+  background-color: #2887e0 !important;
+}
+
+.secondary-bg {
+  background-color: #2db88e !important;
+}
+
+.success-bg {
+  background-color: rgb(20, 128, 47) !important;
+}
+
+.warning-bg {
+  background-color: rgb(196, 130, 33) !important;
+}
+
+.error-bg {
+  background-color: rgb(196, 33, 33) !important;
+}
+
+.success {
+  color: green;
+  border-color: green;
+}
+
+.bolder {
+  font-weight: 600;
+}

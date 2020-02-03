@@ -16,6 +16,7 @@ class UserProfileManager(BaseUserManager):
         extras.setdefault('is_superuser', True)
         extras.setdefault('is_active', True)
         extras.setdefault('user_type', 'admin')
+        extras.setdefault('account_status', 'active')
         if extras.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extras.get('is_superuser') is not True:

@@ -1,67 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700,900&display=swap");
-
-/* Color Constants 
-
-Primary (blue) - #2887e0
-
-*/
-
-/* Buttons */
-
-.btn {
-  background-color: rgb(219, 219, 219);
-  font-size: 18px;
-  padding: 8px 20px;
-  outline: none;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  opacity: 0.9;
-  width: fit-content;
-}
-
-.btn.block {
-  width: 100%;
-}
-
-.btn:hover {
-  cursor: pointer;
-  opacity: 1;
-}
-
-.btn:focus {
-  border: 2px solid rgb(0, 0, 0);
-}
-.btn.primary {
-  background-color: rgb(0, 81, 255);
-  color: white;
-}
-
-.btn.outlined {
-  border: 2px solid black;
-  color: black;
-  background-color: transparent;
-}
-
-.btn.outlined.bg {
-  border: 2px solid rgba(255, 255, 255, 0.459);
-  color: white;
-  background-color: transparent;
-}
-
-/* Color helpers */
-
-.primary {
-  color: #2887e0;
-}
-
-.primary-bg {
-  background-color: #2887e0;
-}
-
-.success-bg {
-  background-color: rgb(20, 128, 47);
-}
-
+@import "./buttons.css";
+@import "./colors.css";
 .alert {
   display: flex;
   justify-content: space-between;
@@ -73,15 +12,15 @@ Primary (blue) - #2887e0
   border-bottom: 8px solid rgb(255, 255, 255);
 }
 
-.alert.info {
+.alert-info {
   background-color: rgb(26, 104, 194);
 }
 
-.alert.success {
+.alert-success {
   background-color: rgb(20, 128, 47);
 }
 
-.alert.error {
+.alert-error {
   background-color: rgb(194, 34, 34);
 }
 
@@ -90,10 +29,6 @@ html {
   margin: 0px;
   padding: 0px;
   height: 100%;
-}
-.success {
-  color: green;
-  border-color: green;
 }
 
 body {
@@ -210,8 +145,11 @@ form {
   color: white;
   font-size: 16px;
   display: flex;
+  z-index: 10000;
+  position: relative;
   align-items: center;
   width: 100%;
+  box-shadow: 0px 8px 16px 0px rgba(34, 105, 212, 0.21);
 }
 
 .nav-bar > h1 {
@@ -225,4 +163,188 @@ form {
 
 .pseudomargin {
   width: 24px;
+}
+
+.side-nav {
+  height: 100%;
+  width: 0px;
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  padding-top: 14px;
+  background-color: #fff;
+  box-shadow: 13px 0px 16px -10px rgba(34, 105, 212, 0.15);
+  overflow-x: hidden;
+  transition: 0.1s width cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.side-nav.open {
+  width: 300px;
+}
+
+.side-nav-item {
+  color: #2887e0;
+  background-color: transparent;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.side-nav-item.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.side-nav-item.clickable:hover {
+  background-color: #2887e011;
+}
+
+.side-nav-item > *:first-child {
+  margin-right: 16px;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.vertical > * > * {
+  margin: 0;
+  padding: 0;
+}
+
+.vertical-spacer {
+  height: 24px;
+  display: block;
+}
+
+.side-nav-item > span {
+  color: grey;
+}
+
+.side-nav-item.selected {
+  background-color: #2887e0;
+}
+
+.side-nav-item.selected > * {
+  color: white;
+}
+
+.side-nav-item.selected:hover {
+  background-color: #2887e0;
+  cursor: default;
+}
+
+main {
+  margin: 0 auto;
+  padding: 16px 24px;
+  max-width: 1080px;
+}
+
+.columns {
+  display: flex;
+  width: 100%;
+}
+
+.column {
+  flex: 1;
+}
+
+.card {
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0px 6px 10px 3px rgba(0, 0, 0, 0.09);
+  transition: 0.2s all ease;
+}
+
+.card.outlined {
+  box-shadow: none;
+  border: 2px solid rgba(0, 0, 0, 0.075);
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  margin: 10px 24px;
+}
+
+.info > .info-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.info > .icon {
+  margin-right: 12px;
+  line-height: 12px;
+  color: rgb(194, 194, 194);
+}
+.info > .info-content > .label {
+  color: grey;
+}
+
+.info > .info-content > .title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.align-right {
+  justify-content: right;
+  align-items: flex-end;
+}
+
+hr.thin {
+  border: 1px solid rgba(0, 0, 0, 0.082);
+}
+
+h1.type {
+  font-size: 48px;
+  color: #2887e0;
+}
+
+h3.type {
+  font-size: 26px;
+  color: #2db88e;
+  font-weight: 500;
+}
+
+h2.type {
+  font-size: 36px;
+  color: #2887e0;
+  font-weight: bold;
+}
+
+.search {
+  display: flex;
+  opacity: 0.5;
+  align-items: center;
+  padding: 0px 24px;
+  background-color: rgba(255, 255, 255, 0.26);
+  border-radius: 8px;
+  transition: 0.1s all ease;
+}
+
+.search:focus-within {
+  opacity: 1;
+  background-color: white;
+  color: black;
+}
+.search > .icon {
+  line-height: 12px;
+}
+
+.search input {
+  background-color: transparent;
+  color: black;
+  border: none;
+  padding: 8px;
+  font-size: 18px;
+  outline: none;
+}
+
+.search input::placeholder {
+  color: rgb(255, 255, 255);
+}
+
+.card.outlined:hover {
+  box-shadow: 0px 6px 10px 3px rgba(0, 0, 0, 0.09);
 }

@@ -3,10 +3,12 @@
 
 <div class="header primary-bg">
   <h1>Create a new account</h1>
-  <span>Already have an account? <a href="{% url 'login' %}">Login</a></span>
+  <span
+    >Already have an account? <a href="{% url 'users:login' %}">Login</a></span
+  >
 </div>
 
-<form action="{% url 'register' %}" method="post">
+<form action="{% url 'users:register' %}" method="post">
   {% csrf_token %}
   <div class="multifield">
     <div class="field">

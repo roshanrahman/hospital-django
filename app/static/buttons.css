@@ -1,0 +1,84 @@
+/* Color Constants 
+
+Primary (blue) - #2887e0
+
+*/
+
+/* Buttons */
+
+.btn {
+  background-color: rgb(219, 219, 219);
+  font-size: 18px;
+  padding: 8px 20px;
+  outline: none;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  opacity: 0.9;
+  width: fit-content;
+  height: fit-content;
+}
+
+.btn.block {
+  width: 100%;
+}
+
+.btn:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.btn:focus {
+  border: 2px solid rgb(0, 0, 0);
+}
+.btn.primary {
+  background-color: rgb(0, 81, 255);
+  color: white;
+}
+
+.btn.outlined {
+  border: 1.3px solid black;
+  color: black;
+  background-color: transparent;
+}
+
+.btn.outlined.bg {
+  border-color: rgba(255, 255, 255, 0.459);
+  color: white;
+  background-color: transparent;
+}
+
+.btn.small {
+  font-size: 15px;
+  padding: 5px 12px;
+}
+
+/* Icon Buttons */
+
+.icon-btn {
+  line-height: 12px;
+  cursor: pointer;
+  opacity: 0.8;
+  position: relative;
+  z-index: 100;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+}
+
+.icon-btn::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  top: -10%;
+  z-index: 90;
+  width: 120%;
+  height: 120%;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0;
+}
+
+.icon-btn:hover::after {
+  opacity: 0.1;
+}

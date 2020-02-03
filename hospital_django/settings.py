@@ -39,11 +39,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
     'app',
+    'specializations',
+    'users',
+    'hospital',
+    'appointment',
     'rest_framework',
     'oauth2_provider',
     'corsheaders',
+    'safedelete',
 ]
 
 REST_FRAMEWORK = {
@@ -104,7 +108,7 @@ WSGI_APPLICATION = 'hospital_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djangoproject',
+        'NAME': 'hospitaldjango',
         'USER': 'dbuser',
         'PASSWORD': 'root',
         'HOST': 'localhost',

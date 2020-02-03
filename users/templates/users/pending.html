@@ -1,0 +1,21 @@
+{% extends 'users/base.html' %} {% block body %}
+
+<div class="header warning-bg">
+  <h1>Approval Pending</h1>
+  <span>Your account is awaiting approval</span>
+</div>
+
+<div class="field">
+  <span>
+    Your account is pending approval. You will be able to login once your
+    account is approved.
+  </span>
+</div>
+
+<div class="field">
+  <a href="{% url 'users:login' %}" class="flex-end">
+    <button type="submit" class="btn ">Go to Login</button>
+  </a>
+</div>
+
+{% endblock body %}
