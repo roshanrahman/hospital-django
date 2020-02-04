@@ -7,14 +7,14 @@
 
 <div class="field">
   <span>
-    Your account is pending approval. You will be able to login once your
-    account is approved.
+    You must verify your email before you can continue. Click the button below
+    to send a verification link to your email address.
   </span>
 </div>
 
 <div class="field">
-  <a href="{% url 'users:login' %}" class="flex-end">
-    <button type="submit" class="btn ">Go to Login</button>
+  <a href="{% url 'users:send_email' %}" class="flex-end">
+    <button type="submit" class="btn primary">Send verification link</button>
   </a>
 </div>
 

@@ -15,7 +15,7 @@
     </title>
   </head>
   <body>
-    <div class="nav-bar warning-bg">
+    <div class="nav-bar">
       <div class="pseudomargin"></div>
       <div class="icon-btn" id="side-nav-toggle">
         <i class="material-icons">menu</i>
@@ -26,7 +26,7 @@
       <div class="spacer"></div>
 
       <div class="spacer"></div>
-      <span>{{ user.email }} (Admin)</span>
+      <span>{{ user.email }}</span>
       <div class="pseudomargin"></div>
       <a href="{% url 'users:logout' %}">
         <button class="btn outlined bg small">Log Out</button>
@@ -46,24 +46,22 @@
       </div>
 
       <div class="vertical-spacer"></div>
-      <div class="side-nav-item clickable selected">
+      <div class="side-nav-item clickable" id="dashboard">
         <i class="material-icons">home</i>
         <span>Dashboard</span>
       </div>
-      <div class="side-nav-item clickable ">
-        <i class="material-icons">face</i>
-        <span>Users</span>
+      <div class="side-nav-item clickable" id="new_appointment">
+        <i class="material-icons">add</i>
+        <span>New Appointment</span>
       </div>
-      <div class="side-nav-item clickable ">
-        <i class="material-icons">local_hospital</i>
-        <span>Hospitals</span>
-      </div>
-      <div class="side-nav-item clickable ">
-        <i class="material-icons">ac_unit</i>
-        <span>Specializations</span>
+      <div class="side-nav-item clickable" id="patient_profile">
+        <i class="material-icons">account_circle</i>
+        <span>My Profile</span>
       </div>
     </div>
+
     <script>
+
       {% block script %}{% endblock script %}
 
       window.onload = event => {

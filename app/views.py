@@ -19,15 +19,8 @@ def index(request):
     elif(request.user.account_status == 'blocked'):
         return redirect('users:account_blocked')
     if(request.user.user_type == 'patient'):
-        return render(request, 'app/patient/index.html', context)
+        return render(request, 'patient/index.html', context)
     elif(request.user.user_type == 'doctor'):
-        return render(request, 'app/doctor/index.html', context)
+        return render(request, 'doctor/index.html', context)
     elif(request.user.user_type == 'admin'):
-        return render(request, 'app/admin/index.html', context)
-
-
-def new_appointment(request):
-    context = {
-        'user': request.user
-    }
-    return render(request, 'app/patient/new.html', context)
+        return render(request, 'hospital-admin/index.html', context)
