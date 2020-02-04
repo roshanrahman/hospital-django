@@ -5,7 +5,7 @@ from app.models import BaseModel
 
 class Specialization(BaseModel):
     name = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return f'Specialization({self.id}) {self.name}'

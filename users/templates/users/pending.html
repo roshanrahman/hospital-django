@@ -1,18 +1,21 @@
 {% extends 'users/base.html' %} {% block body %}
 
 <div class="header warning-bg">
-  <h1>Approval Pending</h1>
-  <span>Your account is awaiting approval</span>
+  <h1>Verify your email</h1>
+  <span>You must verify your email before you can continue</span>
 </div>
 
 <div class="field">
   <span>
-    Your account is pending approval. You will be able to login once your
-    account is approved.
+    Your email address ({{ user.email }}) has not been verified. Please check
+    your email and click on the verification link sent to you.
   </span>
 </div>
 
 <div class="field">
+  <a href="{% url 'users:send_email' %}">
+    Resend email
+  </a>
   <a href="{% url 'users:login' %}" class="flex-end">
     <button type="submit" class="btn ">Go to Login</button>
   </a>

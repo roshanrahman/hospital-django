@@ -1,8 +1,11 @@
 from django.urls import path, include
-from app import views
+from app import views as app_views
+from hospitaladmin import views as hospitaladmin_views
 
 app_name = 'app'
+
 urlpatterns = [
-    path('new', views.new_appointment, name='new_appointment'),
-    path('', views.index, name='index'),
+    path('view-users', hospitaladmin_views.view_users),
+    path('patient', include('patient.urls')),
+    path('', app_views.index, name='index'),
 ]

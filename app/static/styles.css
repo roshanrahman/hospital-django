@@ -176,7 +176,7 @@ form {
   background-color: #fff;
   box-shadow: 13px 0px 16px -10px rgba(34, 105, 212, 0.15);
   overflow-x: hidden;
-  transition: 0.1s width cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: 0.1s width cubic-bezier(0.6, 0.04, 0.98, 0.335);
 }
 
 .side-nav.open {

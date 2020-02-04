@@ -31,7 +31,10 @@ class UserProfile(AbstractUser, SafeDeleteModel):
         'User type', max_length=10,  choices=USER_TYPE_CHOICES)
     account_status = models.CharField(
         choices=ACCOUNT_STATUS_CHOICES, max_length=20, default='pending')
-    specialization = models.ManyToManyField(Specialization)
+    specialization = models.ManyToManyField(Specialization, blank=True)
+    email_verified = models.BooleanField(default=False)
+    email_verification_code = models.CharField(
+        max_length=255, blank=True, null=True, default=None)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserProfileManager()

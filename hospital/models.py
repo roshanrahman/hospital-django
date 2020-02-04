@@ -17,7 +17,11 @@ class Hospital(BaseModel):
         verbose_name='Treatment session (in minutes)')
     opening_hours = models.TimeField()
     closing_hours = models.TimeField()
+    doctors = models.ManyToManyField(UserProfile, limit_choices_to={
+        'user_type': 'doctor'
+    }, related_name='doctors', blank=True)
     status = models.CharField(
         max_length=255, default='active', choices=HOSPITAL_STATUS_CHOICES)
-    specialization = models.ManyToManyField(Specialization)
-    admin = models.ManyToManyField(UserProfile)
+    specialization = models.ManyToManyField(Specialization, blank=True)
+    admin = models.ManyToManyField(
+        UserProfile, related_name='admins', blank=True)

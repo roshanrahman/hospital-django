@@ -1,7 +1,9 @@
-{% extends 'app/doctor/base.html' %}
+{% extends 'patient/base.html' %}
 <!-- -->
-<!---->
+
+{% block script %} var selectedItemId = 'dashboard'; {% endblock script %}<!---->
 {% block body %}
+<!---->
 
 <main>
   <div class="columns" style="align-items: center;">
@@ -110,3 +112,4 @@
 </main>
 
 {% endblock body %}
+<!-- -->

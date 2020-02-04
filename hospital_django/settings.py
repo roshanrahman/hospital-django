@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'users',
     'hospital',
     'appointment',
+    'doctor',
+    'patient',
+    'hospitaladmin',
     'rest_framework',
     'oauth2_provider',
     'corsheaders',
@@ -155,3 +158,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.UserProfile'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'roshan.g@codingmart.com'
+EMAIL_HOST_PASSWORD = 'codingmart6399'
+EMAIL_PORT = 587
