@@ -10,7 +10,7 @@ const paths = [
   },
   {
     id: "new_appointment",
-    path: "/new"
+    path: "/patient/new_appointment"
   },
   {
     id: "admin_users",
