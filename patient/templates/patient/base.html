@@ -35,7 +35,7 @@
     </div>
     <main></main>
     {% for message in messages %}
-    <div class="alert">
+    <div class="alert alert-{{ message.tags }}">
       <span> {{ message }}</span>
     </div>
     {% endfor %} {% block body %} {% endblock body %}
@@ -54,22 +54,23 @@
         <i class="material-icons">add</i>
         <span>New Appointment</span>
       </div>
+      <div class="side-nav-item clickable" id="patient_appointments">
+        <i class="material-icons">assignment_turned_in</i>
+        <span>My Appointments</span>
+      </div>
       <div class="side-nav-item clickable" id="patient_profile">
         <i class="material-icons">account_circle</i>
         <span>My Profile</span>
       </div>
     </div>
-
+    {% block script %}{% endblock script %}
     <script>
-
-      {% block script %}{% endblock script %}
-
       window.onload = event => {
         //To toggle selected state of the side nav
-        console.log(selectedItemId)
+        console.log(selectedItemId);
         const selectedItem = document.getElementById(selectedItemId);
-        if(!selectedItem) return;
-        selectedItem.classList.add('selected');
+        if (!selectedItem) return;
+        selectedItem.classList.add("selected");
       };
     </script>
     <script src="{% static 'interface.js' %}"></script>

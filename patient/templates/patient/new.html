@@ -1,11 +1,10 @@
 {% extends 'patient/base.html' %}
 <!-- -->{% block title %} New Appointment {% endblock title %}
 <!-- -->
-{% block script %} var selectedItemId = 'new-appointment'; {% endblock script %}
 {% block body %}
 <main>
   <section id="step-1">
-    <div class="columns">
+    <div class="columns" style="align-items: center;">
       <h2 class="type">Book a new appointment</h2>
       <div class="spacer"></div>
       <h3 class="type">Step 1 / 3</h3>
@@ -16,10 +15,17 @@
           Search
         </h3>
       </div>
-      <form action="new" method="GET">
-        <input type="text" name="search" />
-      </form>
 
+      <div class="search-area">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search to get started"
+          autocomplete="off"
+          id="search_input"
+        />
+        <div class="results" id="results"></div>
+      </div>
       {% if results %}
       <h2>Search Results for {{ query }}</h2>
 
@@ -33,4 +39,59 @@
     </div>
   </section>
 </main>
-{% endblock body %}
+{% endblock body %} {% block script %}
+<script>
+  var selectedItemId = "new_appointment";
+  const searchInput = document.getElementById("search_input");
+  searchInput.addEventListener("input", event => {
+    console.log(event);
+    getSearchResults(event.target.value);
+  });
+
+  function getSearchResults(query) {
+    console.log("The query is", query);
+    if (query.trim() == "" || !query) {
+      const resultsSection = document.getElementById("results");
+      resultsSection.innerHTML = "";
+      return;
+    }
+    buildSearchResultsList(false, true);
+    fetch(`http://localhost:8000/patient/search?query=${query}`, {}).then(
+      response => {
+        response.json().then(responseData => {
+          console.log(responseData);
+          buildSearchResultsList(responseData, false);
+        });
+      }
+    );
+  }
+
+  function buildSearchResultsList(data, loading, reset = false) {
+    const resultsSection = document.getElementById("results");
+    resultsSection.innerHTML = "";
+    if (reset) return;
+    if (loading) {
+      resultsSection.innerHTML = `
+      <div class="result empty">
+            <i class="material-icons animated-clock">hourglass_empty</i>
+            <span class="result-type">Searching</span>
+          </div>`;
+      return;
+    }
+    if (data.length == 0) {
+      resultsSection.innerHTML = ` <div class="result empty">
+            <i class="material-icons">not_interested</i>
+            <span class="result-type error">No results</span>
+          </div>`;
+      return;
+    }
+    data.forEach(result => {
+      const resultElement = document.createElement("div");
+      resultElement.classList.add("result");
+      resultElement.innerHTML = `<span class="result-title primary">${result.name}</span>
+            <span class="result-type secondary">${result.type}</span>`;
+      resultsSection.append(resultElement);
+    });
+  }
+</script>
+{% endblock script %}
