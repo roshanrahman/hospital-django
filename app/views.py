@@ -19,7 +19,7 @@ def index(request):
     elif(request.user.account_status == 'blocked'):
         return redirect('users:account_blocked')
     if(request.user.user_type == 'patient'):
-        return render(request, 'patient/index.html', context)
+        return redirect('app:patient:index')
     elif(request.user.user_type == 'doctor'):
         return render(request, 'doctor/index.html', context)
     elif(request.user.user_type == 'admin'):

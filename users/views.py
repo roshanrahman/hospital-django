@@ -50,6 +50,11 @@ def register(request):
 
 def login(request):
     if request.method == 'POST':
+        user = UserProfile.objects.filter(email=request.POST['email'])
+        if(not user.exists()):
+            messages.error(
+                request, 'No account exists with the email address you provided')
+            return redirect('users:login')
         r = requests.post('http://0.0.0.0:8000/o/token/',
                           data={
                               'grant_type': 'password',

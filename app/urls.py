@@ -6,6 +6,6 @@ app_name = 'app'
 
 urlpatterns = [
     path('view-users', hospitaladmin_views.view_users),
-    path('patient', include('patient.urls')),
+    path('patient/', include('patient.urls', namespace='home')),
     path('', app_views.index, name='index'),
 ]

@@ -8,6 +8,7 @@
   background-color: grey;
   color: white;
   font-size: 18px;
+  cursor: pointer;
   font-weight: 600;
   border-bottom: 8px solid rgb(255, 255, 255);
 }
@@ -176,7 +177,6 @@ form {
   background-color: #fff;
   box-shadow: 13px 0px 16px -10px rgba(34, 105, 212, 0.15);
   overflow-x: hidden;
-  transition: 0.1s width cubic-bezier(0.6, 0.04, 0.98, 0.335);
 }
 
 .side-nav.open {
@@ -347,4 +347,105 @@ h2.type {
 
 .card.outlined:hover {
   box-shadow: 0px 6px 10px 3px rgba(0, 0, 0, 0.09);
+}
+
+.row {
+  padding-left: 24px;
+  padding-right: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.search-area {
+  margin: 0 auto;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+}
+.search-area input {
+  font-size: 36px;
+  outline: 0;
+  border: 0;
+  background-color: transparent;
+  margin-bottom: 14px;
+  border-bottom: 2px solid rgba(128, 128, 128, 0.336);
+}
+
+.search-area input::placeholder {
+  color: rgba(128, 128, 128, 0.363);
+}
+
+.search-area .result {
+  padding: 24px;
+  background-color: white;
+  font-size: 20px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  align-items: center;
+  border-bottom: 1px solid rgb(228, 228, 228);
+}
+
+.search-area .result .result-type {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+@keyframes clock-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(90deg);
+  }
+  30% {
+    transform: rotate(90deg);
+  }
+  39% {
+    transform: rotate(180deg);
+  }
+  51% {
+    transform: rotate(180deg);
+  }
+  59% {
+    transform: rotate(270deg);
+  }
+  70% {
+    transform: rotate(270deg);
+  }
+  79% {
+    transform: rotate(360deg);
+  }
+  85% {
+    transform: rotate(0deg);
+  }
+}
+
+.animated-clock {
+  animation: clock-animation 3s infinite 0s ease-in-out;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+#expand-toggle-indicator {
+  transition: 0.3s all ease;
+}
+
+.expand-area {
+  flex-direction: column;
+}
+
+.collapse-menu {
+  position: relative;
+  background-color: red;
+  top: 0;
 }

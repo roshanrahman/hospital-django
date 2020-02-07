@@ -7,6 +7,13 @@
 .secondary {
   color: #2db88e;
 }
+.warning {
+  color: rgb(196, 130, 33);
+}
+
+.error {
+  color: rgb(196, 33, 33);
+}
 
 .primary-bg {
   background-color: #2887e0 !important;
