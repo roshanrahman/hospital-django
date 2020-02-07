@@ -1,0 +1,29 @@
+{% extends 'patient/base.html' %}
+<!---->{% block body %}
+<main>
+  <div class="columns" style="align-items: center;">
+    <h2 class="type">All Appointments</h2>
+    <div class="spacer"></div>
+    <a href="{% url 'app:patient:new_appointment' %}">
+      <button class="btn primary">Book new appointment</button>
+    </a>
+  </div>
+
+  <div class="columns flex-align-center">
+    <div class="column">
+      <span>FIlter by search</span>
+    </div>
+
+    <input type="text" placeholder="Search" />
+    <select name="sort" id="sort">
+      <option value="latest">Latest First</option>
+      <option value="oldest">Oldest First</option>
+      <option value="alphabetical">Alphabetical (a-z)</option>
+    </select>
+  </div>
+
+  <div class="vertical-spacer"></div>
+  <hr />
+  <div class="vertical-spacer"></div>
+</main>
+{% endblock body %}
