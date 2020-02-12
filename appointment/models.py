@@ -24,7 +24,7 @@ class Appointment(BaseModel):
     }, on_delete=models.CASCADE, related_name='patient')
     at_hospital = models.ForeignKey(
         Hospital, on_delete=models.CASCADE, related_name='+')
-    time_slot = models.DateField()
+    time_slot = models.DateTimeField()
     status = models.CharField(
         choices=APPOINTMENT_STATUS_CHOICES, max_length=20),
     notes = models.TextField(null=True)

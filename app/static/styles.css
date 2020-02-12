@@ -224,6 +224,7 @@ form {
 
 .side-nav-item.selected {
   background-color: #2887e0;
+  pointer-events: none;
 }
 
 .side-nav-item.selected > * {
@@ -244,6 +245,7 @@ main {
 .columns {
   display: flex;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .column {
@@ -303,7 +305,7 @@ h1.type {
 
 h3.type {
   font-size: 26px;
-  color: #2db88e;
+  color: #009e42;
   font-weight: 500;
 }
 
@@ -448,4 +450,170 @@ h2.type {
   position: relative;
   background-color: red;
   top: 0;
+}
+
+.select {
+  padding: 8px;
+  background-color: white;
+  border-radius: 8px;
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+.select > option {
+  font-size: 18px;
+  padding: 8px;
+}
+
+.text-label {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+.hospital-card {
+  display: flex;
+  width: 100%;
+  max-width: 300px;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.075);
+}
+
+.hospital-card-header {
+  background-color: #009e42;
+  color: white;
+  padding: 16px;
+}
+
+.hospital-card-header h1 {
+  margin: 0px;
+}
+
+.hospital-card-header h2 {
+  margin: 0px;
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.hospital-card-details {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hospital-card-details-item {
+  margin-bottom: 8px;
+}
+.hospital-card-details-item label {
+  margin: 0px;
+  color: grey;
+}
+
+.hospital-card-details-item h3 {
+  margin: 2px 0px;
+  color: #2887e0;
+}
+
+.hospital-card-actions {
+  background-color: rgba(0, 0, 0, 0.082);
+  padding: 16px;
+}
+
+.card-header {
+  margin-left: 16px;
+}
+
+.card-header h2 {
+  margin: 0px;
+}
+
+.card-header p {
+  margin: 0px;
+  font-size: 20px;
+  color: grey;
+}
+
+span.type {
+  color: grey;
+  font-size: 18px;
+  margin: 16px;
+}
+
+.result {
+  cursor: pointer;
+  transition: 0.15s all ease;
+  box-shadow: 0px 0px 55px 6px rgba(0, 0, 0, 0);
+  z-index: 10;
+}
+.result:hover {
+  transform: scale(1.01);
+  box-shadow: 0px 0px 55px -31px rgba(7, 46, 78, 0.596);
+  z-index: 20;
+}
+
+.appointment h1 {
+  margin: 0;
+}
+
+.appointment {
+  padding: 24px;
+  margin: 24px;
+  border-radius: 8px;
+  border: 3px dashed #2887e065;
+}
+
+.date-list {
+  display: flex;
+  margin: 24px;
+}
+
+.date-chip {
+  padding: 8px 16px;
+  background: rgba(128, 128, 128, 0.171);
+  border-radius: 50px;
+  margin-right: 16px;
+  margin-bottom: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.date-chip:hover {
+  background: rgba(128, 128, 128, 0.418);
+}
+
+.date-chip.selected {
+  background: rgb(0, 110, 255);
+  color: white;
+}
+
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.time-of-day {
+  margin: 24px;
+}
+
+.time-of-day > label {
+  padding-bottom: 24px;
+  color: grey;
+  font-size: 18px;
+}
+
+.time-of-day > hr {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+  color: rgb(109, 109, 109);
 }

@@ -1,22 +1,99 @@
 {% extends 'patient/base.html' %}
 <!-- -->{% block title %} New Appointment {% endblock title %}
 <!-- -->
-{% block body %}
+
+{% block head %} {% endblock head %} {% block body %}
 <main>
+  <h1>Doctor {{ doctor_id }}</h1>
+  <h1>Hospital {{ hospital_id }}</h1>
+  <h1>Specialization {{ specialization_id }}</h1>
   <section id="step-1">
     <div class="columns" style="align-items: center;">
-      <h2 class="type">Book a new appointment</h2>
+      <h2 class="type">Select a time slot</h2>
       <div class="spacer"></div>
-      <h3 class="type">Step 1 / 3</h3>
+      <h3 class="type">Step 2 / 3</h3>
     </div>
     <div class="card" id="search">
       <div class="columns" style="padding: 0px 24px 0px 24px;">
         <h3 class="type">
-          Search
+          Select a date
         </h3>
       </div>
+      <div class="date-list">
+        <div class="date-chip selected" id="selected-date">
+          06/07/2020
+        </div>
+        <div>
+          <div class="date-chip primary" onclick="openDatePicker();">
+            Change date
+          </div>
+          <div
+            id="datepicker"
+            style="position: absolute; z-index: 10000; display: none;"
+          ></div>
+        </div>
+      </div>
+      <div class="columns" style="padding: 0px 24px 0px 24px;">
+        <h3 class="type">
+          Select a time slot
+        </h3>
+      </div>
+      <div class="slot-list">
+        <div class="time-of-day">
+          <label>Morning</label>
+          <div class="vertical-spacer"></div>
 
-      <div class="search-area">
+          <div class="slots" id="morning-slots">
+            <div class="date-chip">
+              09:30 AM to 10:30 PM
+            </div>
+            <div class="date-chip disabled">
+              06/07/2020
+            </div>
+            <div class="date-chip">
+              06/07/2020
+            </div>
+          </div>
+          <hr />
+        </div>
+        <div class="time-of-day">
+          <label>Noon</label>
+          <div class="vertical-spacer"></div>
+          <div class="slots" id="noon-slots">
+            <div class="date-chip">
+              06/07/2020
+            </div>
+            <div class="date-chip">
+              06/07/2020
+            </div>
+            <div class="date-chip">
+              06/07/2020
+            </div>
+          </div>
+          <hr />
+        </div>
+        <div class="time-of-day">
+          <label>Evening</label>
+          <div class="vertical-spacer"></div>
+
+          <div class="slots" id="evening-slots">
+            <div class="date-chip">
+              06/07/2020
+            </div>
+            <div class="date-chip">
+              06/07/2020
+            </div>
+            <div class="date-chip">
+              06/07/2020
+            </div>
+          </div>
+          <hr />
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin: 24px;">
+        <button class="btn primary">Continue</button>
+      </div>
+      <!-- <div class="search-area">
         <input
           type="text"
           name="search"
@@ -25,37 +102,8 @@
           id="search_input"
         />
         <div class="results" id="results"></div>
-      </div>
+      </div> -->
       <div class="doctor-card"></div>
-    </div>
-    <div class="card" id="doctor-details">
-      <div class="header" onclick="gotoSearch()">
-        <div class="icon-btn primary">
-          <i class="material-icons">arrow_back</i>
-          <div class="pseudomargin"></div>
-          <span>Back to Search Results</span>
-        </div>
-      </div>
-      <div class="columns">
-        <div class="card-header">
-          <h2 class="type" id="doctor-details-name">Null</h2>
-          <p>
-            Specializes in
-            <span class="secondary" id="doctor-details-specialization"
-              >Null</span
-            >
-          </p>
-        </div>
-      </div>
-      <hr style="margin:24px; border: 1px solid rgba(0, 0, 0, 0.075)" />
-      <div class="columns">
-        <div class="column">
-          <span class="type">
-            Hospitals this doctor works in
-          </span>
-        </div>
-      </div>
-      <div class="columns" id="doctor-details-hospitals"></div>
     </div>
   </section>
   <form
@@ -72,20 +120,88 @@
 </main>
 {% endblock body %} {% block script %}
 <script>
-  window.addEventListener("load", () => {
-    const doctorDetailsCard = document.querySelector("#doctor-details");
-    doctorDetailsCard.style.display = "none";
-  });
+  let datePicker = null;
+  let datePickerInput = null;
+  let selectedDate = moment();
 
+  function updateSelectedDateChip() {
+    const selectedDateChip = document.querySelector("#selected-date");
+    selectedDateChip.innerText = "";
+    selectedDateChip.innerText = selectedDate.format("DD/MM/YYYY");
+    console.log(selectedDate.format("DD/MM/YYYY"));
+  }
+  window.addEventListener("load", () => {
+    fetchSlots();
+    updateSelectedDateChip(moment());
+    datePickerInput = document.getElementById("datepicker");
+    datepicker = new TheDatepicker.Datepicker(null, datePickerInput);
+    datepicker.options.setHideOnBlur(true);
+    datepicker.options.setHideOnSelect(true);
+    datepicker.options.onSelect((event, day) => {
+      console.log(day);
+      selectedDate = moment({
+        years: day.year,
+        months: day.month - 1,
+        days: day.dayNumber
+      });
+      updateSelectedDateChip();
+      datePickerInput.style.display = "none";
+    });
+    datepicker.render();
+  });
   let userChoice = null;
   let context = null;
 
   var selectedItemId = "new_appointment";
   const searchInput = document.getElementById("search_input");
+
   searchInput.addEventListener("input", event => {
     console.log(event);
     getSearchResults(event.target.value);
   });
+
+  function openDatePicker() {
+    datePickerInput.style.display =
+      datePickerInput.style.display == "block" ? "none" : "block";
+  }
+
+  function buildSlotChip(start, end) {
+    start_date = moment();
+    start_date.hour(start.hours);
+    start_date.minute(start.minutes);
+    end_date = moment();
+    end_date.hour(end.hours);
+    end_date.minute(end.minutes);
+    return `
+    <div class="date-chip">
+              ${start_date.format("hh:mm A")} to ${end_date.format("hh:mm A")}
+            </div>`;
+  }
+
+  async function fetchSlots() {
+    let result = await fetch(
+      "http://localhost:8000/patient/get_slots?hospital_id={{ hospital_id }}&doctor_id={{ doctor_id }}"
+    );
+    result = await result.json();
+    console.log(result);
+    const morningSlotsElement = document.getElementById("morning-slots");
+    const noonSlotsElement = document.getElementById("noon-slots");
+    const eveningSlotsElement = document.getElementById("evening-slots");
+
+    morningSlotsElement.innerHTML = "";
+    noonSlotsElement.innerHTML = "";
+    eveningSlotsElement.innerHTML = "";
+
+    result.morning.forEach(result => {
+      morningSlotsElement.innerHTML += buildSlotChip(result.start, result.end);
+    });
+    result.noon.forEach(result => {
+      noonSlotsElement.innerHTML += buildSlotChip(result.start, result.end);
+    });
+    result.evening.forEach(result => {
+      eveningSlotsElement.innerHTML += buildSlotChip(result.start, result.end);
+    });
+  }
 
   function gotoSearch() {
     const searchResultsCard = document.querySelector("#search");
@@ -216,7 +332,7 @@
       resultElement.classList.add("result");
       if (result.type === "doctor") {
         resultElement.innerHTML = `
-       
+
             <span class="result-title primary"
               >${result.name} ${result.id}<br />
               <span class="grey text-label"
