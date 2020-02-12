@@ -13,6 +13,11 @@
     <title>
       {% block title %}Hospital Management{% endblock title %}
     </title>
+    <link rel="stylesheet" href="{% static 'the-datepicker.css' %}" />
+    <script src="{% static 'the-datepicker.min.js' %}"></script>
+    <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
+
+    {% block head %} {% endblock head %}
   </head>
   <body>
     <div class="nav-bar">
@@ -29,7 +34,7 @@
       <span>{{ user.email }}</span>
       <div class="pseudomargin"></div>
       <a href="{% url 'users:logout' %}">
-        <button class="btn outlined bg small">Log Out</button>
+        <button class="btn outlined bg small">LOG OUT</button>
       </a>
       <div class="pseudomargin"></div>
     </div>

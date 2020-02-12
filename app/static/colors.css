@@ -5,7 +5,7 @@
 }
 
 .secondary {
-  color: #2db88e;
+  color: #009e42;
 }
 .warning {
   color: rgb(196, 130, 33);
@@ -15,12 +15,16 @@
   color: rgb(196, 33, 33);
 }
 
+.grey {
+  color: grey;
+}
+
 .primary-bg {
   background-color: #2887e0 !important;
 }
 
 .secondary-bg {
-  background-color: #2db88e !important;
+  background-color: #009e42 !important;
 }
 
 .success-bg {

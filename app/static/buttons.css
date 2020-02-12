@@ -58,6 +58,8 @@ Primary (blue) - #2887e0
   line-height: 12px;
   cursor: pointer;
   opacity: 0.8;
+  display: flex;
+  align-items: center;
   position: relative;
   z-index: 100;
 }
