@@ -14,5 +14,6 @@ urlpatterns = [
     path('profile', views.patient_profile, name="profile"),
     path('search', views.search_results_json),
     path('get_data', views.get_data_json),
+    path('make_appointment', views.make_appointment),
     path('', views.index, name="index"),
 ]

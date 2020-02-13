@@ -613,6 +613,7 @@ span.type {
 }
 
 .disabled {
+  cursor: not-allowed;
   pointer-events: none;
   opacity: 0.4;
   color: rgb(109, 109, 109);

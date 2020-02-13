@@ -3,9 +3,6 @@
 <!-- -->
 {% block body %}
 <main>
-  <h1>Doctor {{ doctor_id }}</h1>
-  <h1>Hospital {{ hospital_id }}</h1>
-  <h1>Specialization {{ specialization_id }}</h1>
   <section id="step-1">
     <div class="columns" style="align-items: center;">
       <h2 class="type">Confirm payment</h2>
@@ -30,36 +27,36 @@
           <div class="column">
             <div class="hospital-card-details-item">
               <label>Patient Name</label>
-              <h3>Patient Name</h3>
+              <h3>{{ patient_name }}</h3>
             </div>
             <div class="vertical-spacer"></div>
             <div class="hospital-card-details-item">
               <label>Doctor Name</label>
-              <h3>Dr. Kishore Kumar</h3>
+              <h3>{{ doctor_name }}</h3>
             </div>
           </div>
           <div class="column">
             <div class="hospital-card-details-item">
               <label>Hospital</label>
-              <h3>Hospital Name</h3>
+              <h3>{{ hospital_name }}</h3>
             </div>
             <div class="vertical-spacer"></div>
 
             <div class="hospital-card-details-item">
               <label>Treatment Specialization</label>
-              <h3>Specialization</h3>
+              <h3>{{ specialization_name }}</h3>
             </div>
           </div>
           <div class="column">
             <div class="hospital-card-details-item">
               <label>Date</label>
-              <h3>06/03/2020</h3>
+              <h3 id="date-display">null</h3>
             </div>
             <div class="vertical-spacer"></div>
 
             <div class="hospital-card-details-item">
               <label>Time</label>
-              <h3>09:30 PM to 10:25 PM</h3>
+              <h3 id="time-display">null</h3>
             </div>
           </div>
         </div>
@@ -68,220 +65,40 @@
       <div
         style="display: flex; margin: 0px;padding: 24px; justify-content: flex-end;"
       >
-        <button class="btn">Cancel</button>
+        <button class="btn" onclick="cancelAppointment()">Cancel</button>
         <div class="pseudomargin"></div>
 
-        <button class="btn primary">Confirm</button>
+        <button class="btn primary" onclick="continueWithAppointment()">
+          Confirm
+        </button>
       </div>
-      <div class="doctor-card"></div>
-    </div>
-    <div class="card" id="doctor-details">
-      <div class="header" onclick="gotoSearch()">
-        <div class="icon-btn primary">
-          <i class="material-icons">arrow_back</i>
-          <div class="pseudomargin"></div>
-          <span>Back to Search Results</span>
-        </div>
-      </div>
-      <div class="columns">
-        <div class="card-header">
-          <h2 class="type" id="doctor-details-name">Null</h2>
-          <p>
-            Specializes in
-            <span class="secondary" id="doctor-details-specialization"
-              >Null</span
-            >
-          </p>
-        </div>
-      </div>
-      <hr style="margin:24px; border: 1px solid rgba(0, 0, 0, 0.075)" />
-      <div class="columns">
-        <div class="column">
-          <span class="type">
-            Hospitals this doctor works in
-          </span>
-        </div>
-      </div>
-      <div class="columns" id="doctor-details-hospitals"></div>
     </div>
   </section>
-  <form
-    id="select-slot-form"
-    action="http://localhost:8000/patient/select_slot"
-    method="POST"
-    style="display: none;"
-  >
-    {% csrf_token %}
-    <input type="text" id="doctor_id_input" name="doctor_id" />
-    <input type="text" id="hospital_id_input" name="hospital_id" />
-    <input type="text" id="specialization_id_input" name="specialization_id" />
-  </form>
 </main>
 {% endblock body %} {% block script %}
 <script>
-  window.addEventListener("load", () => {
-    const doctorDetailsCard = document.querySelector("#doctor-details");
-    doctorDetailsCard.style.display = "none";
-  });
+  var selectedDate = "{{ time_slot }}";
 
-  let userChoice = null;
-  let context = null;
+  window.addEventListener("load", () => {
+    selectedDate = moment(selectedDate, "YYYY-MM-DD HH:mm");
+    console.log(selectedDate);
+    date_string = selectedDate.format('DD/MM/YYYY');
+    time_string = `${selectedDate.format('hh:mm A')} to ${selectedDate.add({{ duration }}, 'minutes').format('hh:mm A')}`;
+    const dateElement = document.getElementById('date-display');
+    dateElement.innerText = date_string;
+    const timeElement = document.getElementById('time-display');
+    timeElement.innerText = time_string;
+  });
 
   var selectedItemId = "new_appointment";
-  const searchInput = document.getElementById("search_input");
-  searchInput.addEventListener("input", event => {
-    console.log(event);
-    getSearchResults(event.target.value);
-  });
 
-  function gotoSearch() {
-    const searchResultsCard = document.querySelector("#search");
-    const doctorDetailsCard = document.querySelector("#doctor-details");
-    searchResultsCard.style.display = "block";
-    doctorDetailsCard.style.display = "none";
-  }
-  function getSearchResults(query) {
-    console.log("The query is", query);
-    if (query.trim() == "" || !query) {
-      const resultsSection = document.getElementById("results");
-      resultsSection.innerHTML = "";
-      return;
-    }
-    buildSearchResultsList(false, true);
-    fetch(`http://localhost:8000/patient/search?query=${query}`, {}).then(
-      response => {
-        response.json().then(responseData => {
-          console.log(responseData);
-          buildSearchResultsList(responseData, false);
-        });
-      }
-    );
+  function continueWithAppointment() {
+    location.replace('http://localhost:8000/patient/make_appointment')
   }
 
-  function handleResultClicked(result) {
-    if (result.type == "doctor") {
-      populateDoctorDetailsCard(result);
-    }
-  }
-
-  async function populateDoctorDetailsCard(result) {
-    let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
-        result.id
-      )}&obj_type=${result.type}`
-    );
-    fetchResult = await fetchResult.json();
-    console.log(fetchResult);
-    const searchResultsCard = document.querySelector("#search");
-    const doctorDetailsCard = document.querySelector("#doctor-details");
-    const doctorDetailsName = document.querySelector("#doctor-details-name");
-    const doctorDetailsSpecialization = document.querySelector(
-      "#doctor-details-specialization"
-    );
-    const doctorDetailsHospitals = document.querySelector(
-      "#doctor-details-hospitals"
-    );
-    context = {};
-    context["doctor_id"] = fetchResult.id;
-    context["specialization_id"] = fetchResult.specialization_id;
-    doctorDetailsName.innerText = `Dr. ${fetchResult.first_name} ${fetchResult.last_name}`;
-    doctorDetailsSpecialization.innerText = fetchResult.specialization_name;
-    hospitals_html = "";
-    fetchResult.hospitals.forEach(hospital => {
-      hospitals_html += buildHospitalCard(hospital);
-    });
-    if (fetchResult.hospitals.length == 0) {
-      hospital_html = "<h1>No hospitals found</h1>";
-    }
-    doctorDetailsHospitals.innerHTML = hospitals_html;
-    searchResultsCard.style.display = "none";
-    doctorDetailsCard.style.display = "block";
-  }
-
-  function buildHospitalCard(hospital) {
-    return `
-  <div class="hospital-card">
-          <div class="hospital-card-header">
-            <h1>${hospital.hospital_name}</h1>
-            <h2>${hospital.address}</h2>
-          </div>
-          <div class="hospital-card-details">
-            <div class="hospital-card-details-item">
-              <label>Consulting duration</label>
-              <h3>${hospital.session_duration} minutes</h3>
-            </div>
-            <div class="hospital-card-details-item">
-              <label>Opening Hours</label>
-              <h3>${hospital.opening_hours}</h3>
-            </div>
-            <div class="hospital-card-details-item">
-              <label>Closing Hours</label>
-              <h3>${hospital.closing_hours}</h3>
-            </div>
-          </div>
-          <div class="hospital-card-actions">
-            <button class="btn primary block" id="${hospital.hospital_id}" onclick="onBookHospitalClicked(event)">Book</button>
-          </div>
-        </div>`;
-  }
-
-  function onBookHospitalClicked(event) {
-    let hospitalId = event.target.id;
-    context["hospital_id"] = Number(hospitalId);
-    const doctorIdInput = document.querySelector("#doctor_id_input");
-    const hospitalIdInput = document.querySelector("#hospital_id_input");
-    const specializationIdInput = document.querySelector(
-      "#specialization_id_input"
-    );
-    const selectSlotForm = document.querySelector("#select-slot-form");
-    doctorIdInput.value = context.doctor_id;
-    hospitalIdInput.value = context.hospital_id;
-    specializationIdInput.value = context.specialization_id;
-    selectSlotForm.submit();
-  }
-  function buildSearchResultsList(data, loading, reset = false) {
-    const resultsSection = document.getElementById("results");
-    resultsSection.innerHTML = "";
-    if (reset) return;
-    if (loading) {
-      resultsSection.innerHTML = `
-      <div class="result empty">
-            <i class="material-icons animated-clock">hourglass_empty</i>
-            <span class="result-type">Searching</span>
-          </div>`;
-      return;
-    }
-    if (data.length == 0) {
-      resultsSection.innerHTML = ` <div class="result empty">
-            <i class="material-icons">not_interested</i>
-            <span class="result-type error">No results</span>
-          </div>`;
-      return;
-    }
-    data.forEach(result => {
-      const resultElement = document.createElement("div");
-      resultElement.classList.add("result");
-      if (result.type === "doctor") {
-        resultElement.innerHTML = `
-       
-            <span class="result-title primary"
-              >${result.name} ${result.id}<br />
-              <span class="grey text-label"
-                >Specializes in
-                <strong class="secondary">${result.specialization}</strong>
-              </span>
-            </span>
-            <span class="result-type secondary">Doctor</span>
-          `;
-      } else {
-        resultElement.innerHTML = `<span class="result-title primary">${result.name}</span>
-            <span class="result-type secondary">${result.type}</span>`;
-      }
-      resultElement.addEventListener("click", event => {
-        handleResultClicked(result);
-      });
-      resultsSection.append(resultElement);
-    });
+  function cancelAppointment() {
+    if(confirm('Are you sure you want to cancel booking the appointment?'))
+    location.replace('http://localhost:8000/')
   }
 </script>
 {% endblock script %}

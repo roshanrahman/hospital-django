@@ -1,6 +1,7 @@
 from users.models import UserProfile
 from hospital.models import Hospital
 from specializations.models import Specialization
+from appointment.models import Appointment
 import datetime
 
 
@@ -18,7 +19,7 @@ def search_results(query):
         results.append({
             'id': doctor.id,
             'name': f'Dr. {doctor.first_name} {doctor.last_name}',
-            'specialization': doctor.specialization.name,
+            'specialization': doctor.specialization.name if doctor.specialization is not None else 'not found',
             'type': 'doctor'
         })
     for hospital in hospitals:
@@ -143,9 +144,9 @@ def build_time_slots(start, end, duration):
     slots = []
 
     start = datetime.datetime(2020, 8, 1, start.hour,
-                              start.minute, start.second, 0)
+                              start.minute, 0, 0)
     end = datetime.datetime(2020, 8, 1, end.hour,
-                            end.minute, end.second, 0)
+                            end.minute, 0, 0)
 
     while((start + datetime.timedelta(minutes=duration)) < end):
         slot_start = start
@@ -169,13 +170,35 @@ def build_time_slots(start, end, duration):
     return slots
 
 
+def is_time_between(begin_time, end_time, check_time=None):
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else:  # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
+
+
 def get_slots(hospital_id, doctor_id, date):
     hospital = Hospital.objects.get(
         pk=hospital_id)
     start_time = hospital.opening_hours
     end_time = hospital.closing_hours
     duration = hospital.session_duration
+    date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
+    print(date_obj.isoformat())
+    appointments = Appointment.objects.filter(
+        appointment_status='pending',
+        time_slot__date=date_obj, at_hospital=hospital_id, doctor=doctor_id)
+    print(appointments)
     slots = build_time_slots(start_time, end_time, duration)
+    for appointment in appointments:
+        appointment.time_slot.replace(second=0)
+        for slot in slots:
+            if(is_time_between(
+                appointment.time_slot.time(),
+                (appointment.time_slot + datetime.timedelta(minutes=duration)).time(),
+                slot['start']['full']
+            )):
+                slot['available'] = False
     morning = []
     noon = []
     evening = []

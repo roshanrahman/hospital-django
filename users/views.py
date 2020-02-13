@@ -37,6 +37,7 @@ def register(request):
                 account_status="pending"
             )
         except IntegrityError as err:
+            print(err)
             messages.error(
                 request, 'The email you provided already exists, please use another email address')
             return redirect('users:register')
