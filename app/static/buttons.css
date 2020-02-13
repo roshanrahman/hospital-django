@@ -84,3 +84,9 @@ Primary (blue) - #2887e0
 .icon-btn:hover::after {
   opacity: 0.1;
 }
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background-color: grey;
+}

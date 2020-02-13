@@ -32,7 +32,7 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     account_status = models.CharField(
         choices=ACCOUNT_STATUS_CHOICES, max_length=20, default='pending')
     specialization = models.ForeignKey(
-        Specialization, on_delete=models.CASCADE)
+        Specialization, on_delete=models.CASCADE, null=True,)
     email_verified = models.BooleanField(default=False)
     email_verification_code = models.CharField(
         max_length=255, blank=True, null=True, default=None)

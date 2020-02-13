@@ -13,6 +13,8 @@ APPOINTMENT_STATUS_CHOICES = [
 
 # Create your models here.
 class Appointment(BaseModel):
+    appointment_status = models.CharField(default='pending',
+                                          choices=APPOINTMENT_STATUS_CHOICES, max_length=20)
     with_specialization = models.ForeignKey(
         Specialization, on_delete=models.CASCADE, related_name='+',
     )
@@ -25,6 +27,4 @@ class Appointment(BaseModel):
     at_hospital = models.ForeignKey(
         Hospital, on_delete=models.CASCADE, related_name='+')
     time_slot = models.DateTimeField()
-    status = models.CharField(
-        choices=APPOINTMENT_STATUS_CHOICES, max_length=20),
     notes = models.TextField(null=True)
