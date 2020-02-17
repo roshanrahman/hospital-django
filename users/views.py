@@ -12,6 +12,7 @@ from users.models import UserProfile
 from oauth2_provider.models import AccessToken
 from django.contrib import messages
 from app.constants import CLIENT_ID, CLIENT_SECRET
+from hospital_django.settings import EMAIL_HOST_USER
 import secrets
 import requests
 from urllib.parse import urlencode
@@ -121,7 +122,7 @@ def send_email(request):
     send_mail(
         'Verification link for Hospital Django',
         f'The verification link to verify your account on Hospital Django is {url}',
-        'roshan.g@codingmart.com',
+        EMAIL_HOST_USER,
         [email_to],
         fail_silently=False,
     )

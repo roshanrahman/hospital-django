@@ -10,6 +10,7 @@ urlpatterns = [
     path('new_appointment', views.new_appointment, name="new_appointment"),
     path('select_slot', views.select_slot, name="select_slot"),
     path('get_slots', views.get_slots_json, name='get_slots'),
+    path('success', views.success, name='success'),
     path('payment', views.payment, name="payment"),
     path('profile', views.patient_profile, name="profile"),
     path('search', views.search_results_json),

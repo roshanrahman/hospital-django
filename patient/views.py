@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from hospital_django.settings import EMAIL_HOST_USER
 from hospital.models import Hospital
 from appointment.models import Appointment
 from specializations.models import Specialization
 from users.models import UserProfile
-from helpers import search_results, get_data, build_time_slots, get_slots
+from helpers import send_appointment_confirmation_email, search_results, get_data, build_time_slots, get_slots, get_today_appointments, get_upcoming_appointments
+from datetime import datetime, timedelta
 
 
 def delete_appointment_session(request):
@@ -77,7 +80,7 @@ def payment(request):
     doctor_data = UserProfile.objects.get(pk=int(doctor_id))
     hospital_data = Hospital.objects.get(pk=int(hospital_id))
     specialization_data = Specialization.objects.get(pk=int(specialization_id))
-    context = {
+    request.session['appointment'] = {
         'patient_name': f'{patient_data.first_name} {patient_data.last_name}',
         'doctor_name': f'Dr. {doctor_data.first_name} {doctor_data.last_name}',
         'hospital_name': f'{hospital_data.name}',
@@ -86,6 +89,7 @@ def payment(request):
         'time_slot': f'{date}',
         'duration': hospital_data.session_duration
     }
+    context = request.session['appointment']
     return render(request, 'patient/payment.html', context)
 
 
@@ -122,7 +126,18 @@ def get_data_json(request):
 @login_required(login_url='/users/login')
 def index(request):
     delete_appointment_session(request)
-    return render(request, 'patient/index.html')
+    try:
+        del request.session['appointment']
+    except Exception:
+        pass
+    today_appointments_list = get_today_appointments(request)
+    upcoming_appointments_list = get_upcoming_appointments(request)
+    context = {
+        'today': today_appointments_list,
+        'upcoming': upcoming_appointments_list
+    }
+    print(today_appointments_list)
+    return render(request, 'patient/index.html', context)
 
 
 def get_slots_json(request):
@@ -154,10 +169,26 @@ def make_appointment(request):
         time_slot=date,
         notes=''
     )
-    messages.success(request, 'Your appointment has been created!')
+    with_specialization = Specialization.objects.get(
+        pk=int(specialization_id))
+    doctor = UserProfile.objects.get(pk=int(doctor_id))
+    patient = UserProfile.objects.get(pk=int(patient_id))
+    at_hospital = Hospital.objects.get(pk=int(hospital_id))
     print(doctor_id, hospital_id, specialization_id, date)
-    try:
-        del request.session['booking']
-    except Exception as identifier:
-        pass
-    return redirect('app:patient:index')
+    send_appointment_confirmation_email(
+        date,
+        f'{patient.first_name} {patient.last_name}',
+        patient.email,
+        f'Dr. {doctor.first_name} {doctor.last_name}',
+        with_specialization.name,
+        at_hospital.name,
+        at_hospital.address,
+        at_hospital.contact
+    )
+    delete_appointment_session(request)
+    return redirect('app:patient:success')
+
+
+def success(request):
+    context = request.session['appointment']
+    return render(request, 'patient/success.html', context)

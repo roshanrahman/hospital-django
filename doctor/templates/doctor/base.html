@@ -46,25 +46,28 @@
       </div>
 
       <div class="vertical-spacer"></div>
-      <div class="side-nav-item clickable selected">
+      <div class="side-nav-item clickable">
         <i class="material-icons">home</i>
         <span>Dashboard</span>
       </div>
-      <div class="side-nav-item clickable ">
-        <i class="material-icons">add</i>
-        <span>New Appointment</span>
+      <div class="side-nav-item clickable" id="doctor_appointments">
+        <i class="material-icons">assignment_turned_in</i>
+        <span>View Appointments</span>
+      </div>
+      <div class="side-nav-item clickable" id="doctor_profile">
+        <i class="material-icons">account_circle</i>
+        <span>My Profile</span>
       </div>
     </div>
+    {% block script %}{% endblock script %}
+
     <script>
-
-      {% block script %}{% endblock script %}
-
       window.onload = event => {
         //To toggle selected state of the side nav
-        console.log(selectedItemId)
+        console.log(selectedItemId);
         const selectedItem = document.getElementById(selectedItemId);
-        if(!selectedItem) return;
-        selectedItem.classList.add('selected');
+        if (!selectedItem) return;
+        selectedItem.classList.add("selected");
       };
     </script>
     <script src="{% static 'interface.js' %}"></script>

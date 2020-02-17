@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'patient',
     'hospitaladmin',
     'rest_framework',
+    'social_django',
     'oauth2_provider',
     'corsheaders',
     'safedelete',
@@ -65,6 +66,9 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOpenId',
+    'social_core.backends.google.GoogleOAuth',
     # Uncomment following if you want to access the admin
     'django.contrib.auth.backends.ModelBackend',
 )
@@ -163,3 +167,11 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'roshan.g@codingmart.com'
 EMAIL_HOST_PASSWORD = 'codingmart6399'
 EMAIL_PORT = 587
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '598521777587-qvcvgl5ubju2ve9le4rfnnppbc1e5ve3.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '2TQXxnAv2NqhuJumO0eZ1yEb'
+LOGIN_URL = 'social/auth/login/google-oauth2/'
+
+LOGIN_REDIRECT_URL = '/social'
+LOGOUT_REDIRECT_URL = '/social'
+SOCIAL_AUTH_URL_NAMESPACE = 'app:social'
+SOCIAL_AUTH_USER_MODEL = 'users.UserProfile'

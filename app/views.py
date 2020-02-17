@@ -23,6 +23,6 @@ def index(request):
     if(request.user.user_type == 'patient'):
         return redirect('app:patient:index')
     elif(request.user.user_type == 'doctor'):
-        return render(request, 'doctor/index.html', context)
+        return redirect('app:doctor:index')
     elif(request.user.user_type == 'admin'):
         return render(request, 'hospital-admin/index.html', context)
