@@ -1,0 +1,16 @@
+Your appointment has been booked for {{ date }} at {{ time }}
+Dear {{ patient_name }}, thank you for booking an appointment with us. The details of your booking are:
+
+Timing: {{ date }} {{ time }}
+
+Patient Name: {{ patient_name }}
+
+Doctor: {{ doctor_name }}
+
+Treatment Specialization: {{ specialization_name }}
+
+Hospital: {{ hospital_name }}
+
+Address: {{ hospital_address }}
+
+Contact: {{ hospital_contact }}

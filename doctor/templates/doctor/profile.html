@@ -1,0 +1,125 @@
+{% extends 'doctor/base.html' %}
+<!-- -->
+{% block body %}
+<main>
+  <section id="step-1">
+    <div class="columns" style="align-items: center;">
+      <h2 class="type">Profile</h2>
+      <div class="spacer"></div>
+      <button class="btn outlined" id="profile-changes-toggle">
+        Edit Details
+      </button>
+    </div>
+    <form action="profile" method="post">
+      {% csrf_token %}
+      <div class="card ">
+        <div class="multifield">
+          <div class="field">
+            <span>First name (Dr. autoprefixed)</span>
+            <input
+              type="text"
+              name="first_name"
+              placeholder="First Name"
+              value="{{ user.first_name }}"
+              required
+              disabled
+            />
+          </div>
+          <div class="field">
+            <span>Last Name</span>
+            <input
+              type="text"
+              name="last_name"
+              placeholder="Last Name"
+              value="{{ user.last_name }}"
+              disabled
+            />
+          </div>
+        </div>
+        <div class="field">
+          <span>Mobile Number</span>
+          <input
+            pattern="[0-9]{10}"
+            type="text"
+            name="mobile"
+            maxlength="10"
+            value="{{ user.mobile }}"
+            placeholder="Mobile Number"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Email Address</span>
+          <input
+            type="email"
+            name="email"
+            maxlength="10"
+            value="{{ user.email }}"
+            placeholder="Mobile Number"
+            required
+            disabled
+          />
+        </div>
+
+        <div class="field">
+          <span>Working on Weekends</span>
+          <label>
+            <input type="checkbox" checked="checked" class="checkbox" />
+            <span class="checkmark"
+              >Enable if you are available on Saturdays and Sundays</span
+            >
+          </label>
+        </div>
+        <div class="vertical-spacer"></div>
+        <div class="row" id="profile-changes-option" style="display: none;">
+          <button
+            class="btn outlined"
+            onclick="enableForm(false);"
+            type="button"
+          >
+            Cancel
+          </button>
+          <div class="spacer"></div>
+          <button class="btn primary flex-end" type="submit">
+            Save Changes
+          </button>
+        </div>
+        <div class="vertical-spacer"></div>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock body %}
+<!-- -->
+{% block script %}
+<script>
+  var selectedItemId = "doctor_profile";
+  const profileChangeToggle = document.getElementById("profile-changes-toggle");
+  const profileChangeOptions = document.getElementById(
+    "profile-changes-option"
+  );
+  profileChangeToggle.addEventListener("click", () => {
+    enableForm(true);
+  });
+
+  function enableForm(status) {
+    const formElements = document.querySelectorAll("input");
+    formElements.forEach(element => {
+      if (element.name == "email") return;
+      if (status) {
+        element.disabled = false;
+      } else {
+        element.disabled = true;
+      }
+    });
+    if (status) {
+      profileChangeToggle.style.display = "none";
+      profileChangeOptions.style.display = "flex";
+    } else {
+      profileChangeToggle.style.display = "flex";
+      profileChangeOptions.style.display = "none";
+    }
+  }
+</script>
+{% endblock script %}

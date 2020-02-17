@@ -2,6 +2,11 @@ from users.models import UserProfile
 from hospital.models import Hospital
 from specializations.models import Specialization
 from appointment.models import Appointment
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from hospital_django.settings import EMAIL_HOST_USER
+
+
 import datetime
 
 
@@ -214,3 +219,84 @@ def get_slots(hospital_id, doctor_id, date):
         'noon': noon,
         'evening': evening
     }
+
+
+def get_today_appointments(request):
+    today_appointments = Appointment.objects.filter(
+        patient=request.user.id,
+        time_slot__date=datetime.datetime.now().date(),
+        appointment_status='pending'
+    )
+    today_appointments_list = []
+    for appointment in today_appointments:
+        today_appointments_list.append({
+            'id': appointment.id,
+            'specialization_name': appointment.with_specialization.name,
+            'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',
+            'hospital': {
+                'name': appointment.at_hospital.name,
+                'address': appointment.at_hospital.address,
+                'contact': appointment.at_hospital.contact,
+            },
+            'doctor_name': f'Dr. {appointment.doctor.first_name} {appointment.doctor.last_name}',
+            'timing': {
+                'date': appointment.time_slot.date(),
+                'date_string': datetime.datetime.strftime(appointment.time_slot, "%d %b %Y"),
+                'time_slot': appointment.time_slot.time(),
+                'time_slot_string': f'{ datetime.datetime.strftime(appointment.time_slot, "%I:%M %p")} to {   datetime.datetime.strftime(appointment.time_slot + datetime.timedelta(minutes=appointment.at_hospital.session_duration), "%I:%M %p")}'
+            }
+        })
+    return today_appointments_list
+
+
+def get_upcoming_appointments(request):
+    upcoming_appointments = Appointment.objects.filter(
+        patient=request.user.id,
+        time_slot__date__gt=datetime.datetime.now().date(),
+        appointment_status='pending'
+    )
+    upcoming_appointments_list = []
+    for appointment in upcoming_appointments:
+        upcoming_appointments_list.append({
+            'id': appointment.id,
+            'specialization_name': appointment.with_specialization.name,
+            'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',
+            'hospital': {
+                'name': appointment.at_hospital.name,
+                'address': appointment.at_hospital.address,
+                'contact': appointment.at_hospital.contact,
+            },
+            'doctor_name': f'Dr. {appointment.doctor.first_name} {appointment.doctor.last_name}',
+            'timing': {
+                'date': appointment.time_slot.date(),
+                'date_string': datetime.datetime.strftime(appointment.time_slot, "%d %b %Y"),
+                'time_slot': appointment.time_slot.time(),
+                'time_slot_string': f'{ datetime.datetime.strftime(appointment.time_slot, "%I:%M %p")} to {   datetime.datetime.strftime(appointment.time_slot + datetime.timedelta(minutes=appointment.at_hospital.session_duration), "%I:%M %p")}'
+            }
+        })
+    return upcoming_appointments_list
+
+
+def send_appointment_confirmation_email(date, patient_name, patient_email, doctor_name, specialization_name, hospital_name, hospital_address, hospital_contact):
+    date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
+    context = {
+        'date': datetime.datetime.strftime(date, '%a %b %d'),
+        'time': datetime.datetime.strftime(date, '%I:%M %p'),
+        'patient_name': patient_name,
+        'doctor_name': doctor_name,
+        'specialization_name': specialization_name,
+        'hospital_name': hospital_name,
+        'hospital_address': hospital_address,
+        'hospital_contact': hospital_contact}
+
+    msg_plain = render_to_string(
+        'patient/email_success.txt', context)
+    msg_html = render_to_string('patient/email_success.html',
+                                context)
+    send_mail(
+        f'Appointment Booked for {datetime.datetime.strftime(date,"%d %b %Y")}',
+        msg_plain,
+        EMAIL_HOST_USER,
+        [patient_email],
+        html_message=msg_html
+    )

@@ -25,3 +25,10 @@ class Hospital(BaseModel):
         max_length=255, default='active', choices=HOSPITAL_STATUS_CHOICES)
     admin = models.ManyToManyField(
         UserProfile, related_name='admins', blank=True)
+    working_on_weekend = models.BooleanField(default=False)
+    other_holidays = models.TextField(null=True, blank=True)
+
+
+class Holidays(BaseModel):
+    date = models.DateField()
+    name = models.CharField(max_length=200)

@@ -18,8 +18,16 @@ const paths = [
     path: "/patient/profile"
   },
   {
+    id: "doctor_profile",
+    path: "/doctor/profile"
+  },
+  {
     id: "patient_appointments",
     path: "/patient/appointments"
+  },
+  {
+    id: "doctor_appointments",
+    path: "/doctor/appointments"
   },
   {
     id: "admin_users",

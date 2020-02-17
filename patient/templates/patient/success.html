@@ -1,0 +1,110 @@
+{% extends 'patient/base.html' %}
+<!-- -->{% block title %} New Appointment {% endblock title %}
+<!-- -->
+{% block body %}
+<main>
+  <section id="step-1">
+    <div class="columns" style="align-items: center;">
+      <i
+        class="material-icons"
+        style="font-size: 64px; color: rgb(19, 194, 107); margin-right: 8px;"
+        >done</i
+      >
+
+      <h2 class="type" style="color: rgb(19, 194, 107);">
+        Your appointment has been booked
+      </h2>
+      <div class="spacer"></div>
+    </div>
+    <div class="card green-shadow" id="search">
+      <div class="columns" style="padding: 0px 24px 0px 24px;">
+        <h3 class="type">
+          Your appointment details
+        </h3>
+      </div>
+
+      <div class="appointment">
+        <h1 class="type" style="text-align: center; opacity: 0.5;">
+          APPOINTMENT
+        </h1>
+        <div class="vertical-spacer"></div>
+        <hr style="border: 2px solid blue; opacity: 0.1;" />
+        <div class="vertical-spacer"></div>
+        <div class="columns">
+          <div class="column">
+            <div class="hospital-card-details-item">
+              <label>Patient Name</label>
+              <h3>{{ patient_name }}</h3>
+            </div>
+            <div class="vertical-spacer"></div>
+            <div class="hospital-card-details-item">
+              <label>Doctor Name</label>
+              <h3>{{ doctor_name }}</h3>
+            </div>
+          </div>
+          <div class="column">
+            <div class="hospital-card-details-item">
+              <label>Hospital</label>
+              <h3>{{ hospital_name }}</h3>
+            </div>
+            <div class="vertical-spacer"></div>
+
+            <div class="hospital-card-details-item">
+              <label>Treatment Specialization</label>
+              <h3>{{ specialization_name }}</h3>
+            </div>
+          </div>
+          <div class="column">
+            <div class="hospital-card-details-item">
+              <label>Date</label>
+              <h3 id="date-display">null</h3>
+            </div>
+            <div class="vertical-spacer"></div>
+
+            <div class="hospital-card-details-item">
+              <label>Time</label>
+              <h3 id="time-display">null</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="vertical-spacer"></div>
+      <div
+        style="display: flex; margin: 0px;padding: 24px; justify-content: flex-end;"
+      >
+        <div class="pseudomargin"></div>
+
+        <button class="btn primary" onclick="continueWithAppointment()">
+          Okay
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock body %} {% block script %}
+<script>
+  var selectedDate = "{{ time_slot }}";
+
+  window.addEventListener("load", () => {
+    selectedDate = moment(selectedDate, "YYYY-MM-DD HH:mm");
+    console.log(selectedDate);
+    date_string = selectedDate.format('DD/MM/YYYY');
+    time_string = `${selectedDate.format('hh:mm A')} to ${selectedDate.add({{ duration }}, 'minutes').format('hh:mm A')}`;
+    const dateElement = document.getElementById('date-display');
+    dateElement.innerText = date_string;
+    const timeElement = document.getElementById('time-display');
+    timeElement.innerText = time_string;
+  });
+
+  var selectedItemId = "new_appointment";
+
+  function continueWithAppointment() {
+    location.replace('http://localhost:8000/patient/make_appointment')
+  }
+
+  function cancelAppointment() {
+    if(confirm('Are you sure you want to cancel booking the appointment?'))
+    location.replace('http://localhost:8000/')
+  }
+</script>
+{% endblock script %}
