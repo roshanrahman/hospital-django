@@ -66,11 +66,11 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = (
     'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth',
     # Uncomment following if you want to access the admin
-    'django.contrib.auth.backends.ModelBackend',
 )
 
 
@@ -171,7 +171,10 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '598521777587-qvcvgl5ubju2ve9le4rfnnppbc1e5ve3.a
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '2TQXxnAv2NqhuJumO0eZ1yEb'
 LOGIN_URL = 'social/auth/login/google-oauth2/'
 
-LOGIN_REDIRECT_URL = '/social'
-LOGOUT_REDIRECT_URL = '/social'
+LOGIN_REDIRECT_URL = '/users/on_external_oauth'
+LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'app:social'
 SOCIAL_AUTH_USER_MODEL = 'users.UserProfile'
+
+OAUTH_CLIENT_ID = 'tlKdTmQfM2gXtefaVdG91tcCkrrBeYXAkJj9Seiw'
+OAUTH_CLIENT_SECRET = 'JohQMKGJVJHu7OQGbiHE7XVkG9luZlZOMMTFReHbxBf7dj88WLYtaxRpbkm4aMJXbNS5gACCoIJksu0UJK73Tfgm51fux4XVqZxpTvi3gv36UWA5Y3C3ck4mnbEo3oxX'

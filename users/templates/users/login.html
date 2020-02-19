@@ -1,14 +1,11 @@
-{% extends 'users/base.html' %} {% block title %} Login {% endblock title %}<!---->
+{% extends 'users/base.html' %} {% load static %}
+<!-- -->
+{% block title %} Login {% endblock title %}<!---->
 {% block body %}
 
 <div class="header primary-bg">
   <h1>Login</h1>
-  <a
-    class="btn btn-primary"
-    href="{% url 'app:social:begin' 'google-oauth2' %}"
-  >
-    Login with Google
-  </a>
+
   <span
     >Not a user? <a href="{% url 'users:register' %}">Create account</a></span
   >
@@ -16,6 +13,16 @@
 
 <form action="{% url 'users:login' %}" method="post">
   {% csrf_token %}
+  <div class="field">
+    <a
+      class="btn btn-google"
+      href="{% url 'app:social:begin' 'google-oauth2' %}"
+    >
+      <img width="18" src="{% static 'google.png' %}" alt="Google Icon" />
+      <div class="pseudomargin"></div>
+      <span>Login with Google</span>
+    </a>
+  </div>
   <div class="field">
     <input type="email" name="email" placeholder="Email" required autofocus />
   </div>

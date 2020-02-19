@@ -30,6 +30,15 @@
           ></div>
         </div>
       </div>
+      <div class="columns" id="no-slots" style="display: none;">
+        <h1
+          class="type"
+          style="opacity: 0.3; margin: 0 auto; padding: 48px 24px;"
+          id="no-appointments"
+        >
+          Doctor not available on the selected day
+        </h1>
+      </div>
       <div class="columns" style="padding: 0px 24px 0px 24px;">
         <h3 class="type">
           Select a time slot
@@ -169,10 +178,14 @@
   window.addEventListener("load", () => {
     fetchSlots();
     updateSelectedDateChip(moment());
+    let max_date = new Date();
+    max_date.setMonth(max_date.getMonth() + 3);
     datePickerInput = document.getElementById("datepicker");
     datepicker = new TheDatepicker.Datepicker(null, datePickerInput);
     datepicker.options.setHideOnBlur(true);
     datepicker.options.setHideOnSelect(true);
+    datepicker.options.setMinDate(new Date().toDateString());
+    datepicker.options.setMaxDate(max_date.toDateString());
     datepicker.options.onSelect((event, day) => {
       console.log(day);
       selectedDate = moment({
@@ -272,10 +285,17 @@
     const morningSlotsElement = document.getElementById("morning-slots");
     const noonSlotsElement = document.getElementById("noon-slots");
     const eveningSlotsElement = document.getElementById("evening-slots");
+    const noSlotsElement = document.getElementById("no-slots");
 
     morningSlotsElement.innerHTML = "";
     noonSlotsElement.innerHTML = "";
     eveningSlotsElement.innerHTML = "";
+
+    if (result.working === false) {
+      noSlotsElement.style.display = "flex";
+      return;
+    }
+    noSlotsElement.style.display = "none";
 
     result.morning.forEach(result => {
       morningSlotsElement.appendChild(

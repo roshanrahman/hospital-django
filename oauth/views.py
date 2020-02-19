@@ -4,14 +4,11 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
+from hospital_django.settings import OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET
 from users.models import UserProfile
 import requests
 
 # from .serializers import CreateUserSerializer
-
-
-CLIENT_ID = 'NW2aZXuHafTvo9cva2mdi42UAOrn5yw76s8iBEwZ'
-CLIENT_SECRET = 'ittU4iHxt5Gc4xXPkiPrXuJPC2LCsSVtDIsu4AMceqk9XaHKuitQ6PloqtwpJNq7wNiRJQMJbMta7YoMy1yKBdnUMiPheZ50AbJ2OnM9osE5gpa6igIfFP8Fs5ZTOIrN'
 
 
 @api_view(['POST'])
@@ -36,8 +33,8 @@ def register(request):
                           'grant_type': 'password',
                           'username': request.data['username'],
                           'password': request.data['password'],
-                          'client_id': CLIENT_ID,
-                          'client_secret': CLIENT_SECRET,
+                          'client_id': OAUTH_CLIENT_ID,
+                          'client_secret': OAUTH_CLIENT_SECRET,
                       },
                       )
     return Response(r.json())
@@ -56,8 +53,8 @@ def token(request):
             'grant_type': 'password',
             'username': request.data['username'],
             'password': request.data['password'],
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
+            'client_id': OAUTH_CLIENT_ID,
+            'client_secret': OAUTH_CLIENT_SECRET,
         },
     )
     return Response(r.json())
@@ -75,8 +72,8 @@ def refresh_token(request):
         data={
             'grant_type': 'refresh_token',
             'refresh_token': request.data['refresh_token'],
-            'client_id': CLIENT_ID,
-            'client_secret': CLIENT_SECRET,
+            'client_id': OAUTH_CLIENT_ID,
+            'client_secret': OAUTH_CLIENT_SECRET,
         },
     )
     return Response(r.json())
@@ -93,8 +90,8 @@ def revoke_token(request):
         'http://0.0.0.0:8000/o/revoke_token/',
         data={
             'token': request.data['token'],
-            'client_secret': CLIENT_SECRET,
-            'client_id': CLIENT_ID,
+            'client_secret': OAUTH_CLIENT_SECRET,
+            'client_id': OAUTH_CLIENT_ID,
         },
     )
     # If it goes well return sucess message (would be empty otherwise)

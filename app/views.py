@@ -26,3 +26,5 @@ def index(request):
         return redirect('app:doctor:index')
     elif(request.user.user_type == 'admin'):
         return render(request, 'hospital-admin/index.html', context)
+    elif(not request.user.user_type):
+        return redirect('users:fill_missing')

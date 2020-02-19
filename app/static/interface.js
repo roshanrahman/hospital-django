@@ -10,6 +10,10 @@ const paths = [
     path: "/"
   },
   {
+    id: "doctor-dashboard",
+    path: "/doctor/"
+  },
+  {
     id: "new_appointment",
     path: "/patient/new_appointment"
   },
@@ -32,6 +36,10 @@ const paths = [
   {
     id: "admin_users",
     path: "/view-users"
+  },
+  {
+    id: "log_out",
+    path: "/users/logout"
   }
 ];
 
