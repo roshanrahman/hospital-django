@@ -3,10 +3,6 @@
 <main>
   <div class="columns" style="align-items: center;">
     <h2 class="type">Appointments</h2>
-    <div class="spacer"></div>
-    <a href="{% url 'app:patient:new_appointment' %}">
-      <button class="btn primary">Book new appointment</button>
-    </a>
   </div>
 
   <div class="columns flex-align-center">
@@ -219,6 +215,6 @@
 {% endblock body %} {% block script %}
 
 <script>
-  var selectedItemId = "patient_appointments";
+  var selectedItemId = "doctor_appointments";
 </script>
 {% endblock script %}

@@ -26,9 +26,9 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     first_name = models.CharField('First Name', max_length=50)
     last_name = models.CharField(
         'Last Name', max_length=50, null=True, default='')
-    mobile = models.CharField('Mobile Number', max_length=13)
+    mobile = models.CharField('Mobile Number', max_length=15)
     user_type = models.CharField(
-        'User type', max_length=10,  choices=USER_TYPE_CHOICES)
+        'User type', max_length=30,  choices=USER_TYPE_CHOICES)
     account_status = models.CharField(
         choices=ACCOUNT_STATUS_CHOICES, max_length=20, default='pending')
     specialization = models.ForeignKey(
@@ -44,4 +44,6 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     objects = UserProfileManager()
 
     def __str__(self):
+        if(self.user_type == 'doctor'):
+            return f'UserProfile({self.id}) {self.email} ({self.user_type}) in ({self.specialization.name if self.specialization else "No Specialization"})'
         return f'UserProfile({self.id}) {self.email} ({self.user_type})'

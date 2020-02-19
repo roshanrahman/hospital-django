@@ -1,0 +1,65 @@
+{% extends 'users/base.html' %} {% block body %}
+
+<div class="header warning-bg">
+  <h1>Complete your details</h1>
+  <span>Some details are required to continue setting up your account.</span>
+</div>
+
+<div class="field">
+  <!-- prettier-ignore -->
+
+  <span>
+    You have authenticated a new account with your Google credentials ({{ user.email }}). Please complete the following details to continue your
+    registration.
+  </span>
+</div>
+
+<form action="{% url 'users:fill_missing' %}" method="post">
+  {% csrf_token %}
+  <div class="multifield">
+    <div class="field">
+      <span>First name</span>
+      <input
+        type="text"
+        name="first_name"
+        placeholder="First Name"
+        value="{{ user.first_name }}"
+        required
+      />
+    </div>
+    <div class="field">
+      <span>Last Name</span>
+      <input
+        type="text"
+        name="last_name"
+        placeholder="Last Name"
+        value="{{ user.last_name }}"
+      />
+    </div>
+  </div>
+  <div class="field">
+    <span>Enter your mobile number.</span>
+    <input
+      pattern="[0-9]{10}"
+      type="text"
+      name="mobile"
+      maxlength="10"
+      placeholder="Mobile Number"
+      required
+    />
+  </div>
+  <div class="field">
+    <span>Choose the account type</span>
+    <select name="user_type" required>
+      <option value="" disabled selected>Select a user type</option>
+
+      <option value="doctor">Doctor</option>
+      <option value="patient">Patient</option>
+    </select>
+  </div>
+  <div class="field">
+    <button type="submit" class="btn primary flex-end">Submit</button>
+  </div>
+</form>
+
+{% endblock body %}

@@ -120,7 +120,7 @@ def search_results_json(request):
 
 
 def get_data_json(request):
-    return JsonResponse(get_data(request.GET.get('query'), request.GET.get('obj_type')))
+    return JsonResponse(get_data(request.GET.get('query'), request.GET.get('obj_type')), safe=False)
 
 
 @login_required(login_url='/users/login')

@@ -9,9 +9,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from users.forms import RegisterUserForm
 from users.models import UserProfile
+from specializations.models import Specialization
 from oauth2_provider.models import AccessToken
 from django.contrib import messages
-from app.constants import CLIENT_ID, CLIENT_SECRET
+from hospital_django.settings import OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET
 from hospital_django.settings import EMAIL_HOST_USER
 import secrets
 import requests
@@ -20,14 +21,19 @@ from urllib.parse import urlencode
 
 def register(request):
     context = {
-        'register_form': RegisterUserForm
+        'register_form': RegisterUserForm,
+        'specializations': Specialization.objects.all()
     }
     if request.method == 'GET':
         return render(request, 'users/register.html', context=context)
     if request.method == 'POST':
         form_data = request.POST
+        print(form_data)
         # TODO Validate
         try:
+            specialization = form_data.get('specialization')
+            if(form_data.get('user_type') == 'patient'):
+                specialization = None
             user = UserProfile.objects.create_user(
                 email=form_data.get('email'),
                 password=form_data.get('password'),
@@ -35,7 +41,9 @@ def register(request):
                 last_name=form_data.get('last_name'),
                 mobile=form_data.get('mobile'),
                 user_type=form_data.get('user_type', 'patient'),
-                account_status="pending"
+                account_status="pending",
+                specialization_id=int(
+                    specialization) if specialization else None
             )
         except IntegrityError as err:
             print(err)
@@ -50,6 +58,47 @@ def register(request):
         return render(request, 'users/success.html')
 
 
+def fill_missing(request):
+    context = {
+        'user': request.user
+    }
+    if request.method == 'GET':
+        return render(request, 'users/fill_missing.html', context=context)
+    if request.method == 'POST':
+        form_data = request.POST
+        # TODO Validate
+        print(form_data)
+        print(form_data.get('mobile'))
+        print(form_data.get('user_type'))
+        try:
+            user = UserProfile.objects.get(email=request.user.email)
+            user.first_name = form_data.get('first_name')
+            user.last_name = form_data.get('last_name')
+            user.mobile = form_data.get('mobile')
+            user.user_type = form_data.get('user_type')
+            user.account_status = "active"
+            user.save()
+        except IntegrityError as err:
+            print(err)
+            messages.error(
+                request, 'There was an error trying to register your account')
+            return redirect('users:fill_missing')
+        except Exception as exp:
+            print(exp)
+            messages.error(request, str(exp))
+            return redirect('users:fill_missing')
+        auth_login(request, user,
+                   backend='oauth2_provider.backends.OAuth2Backend')
+        return redirect('app:index')
+
+
+def on_external_oauth(request):
+    user = request.user
+    if(not user.user_type or not user.mobile or not user.first_name):
+        return redirect('users:fill_missing')
+    return redirect('app:index')
+
+
 def login(request):
     if request.method == 'POST':
         user = UserProfile.objects.filter(email=request.POST['email'])
@@ -62,8 +111,8 @@ def login(request):
                               'grant_type': 'password',
                               'username': request.POST['email'],
                               'password': request.POST['password'],
-                              'client_id': CLIENT_ID,
-                              'client_secret': CLIENT_SECRET,
+                              'client_id': OAUTH_CLIENT_ID,
+                              'client_secret': OAUTH_CLIENT_SECRET,
                           },
                           )
         if(r.json().get('access_token', None)) is not None:
@@ -77,6 +126,7 @@ def login(request):
             response = redirect(index_url)
             return response
         else:
+            print(r.json())
             messages.error(request, 'Invalid Credentials')
             return redirect('users:login')
 
@@ -111,6 +161,8 @@ def send_email(request):
     if(not request.user.is_authenticated):
         return redirect('users:approval_pending')
     email_to = request.user.email
+    if('noemail' in email_to):
+        email_to = 'roshanrahman6399@gmail.com'
     user_id = request.user.id
     verification_token = secrets.token_hex(16)
     url = 'http://localhost:8000/users/verify_email'

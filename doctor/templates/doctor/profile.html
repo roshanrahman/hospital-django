@@ -61,17 +61,44 @@
             disabled
           />
         </div>
-
+        <!-- prettier-ignore -->
         <div class="field">
           <span>Working on Weekends</span>
           <label>
-            <input type="checkbox" checked="checked" class="checkbox" />
+            <input
+              type="checkbox"
+              {% if user.working_on_weekend %}
+              checked="checked"
+              value="True"
+              {% endif %}
+              name="working_on_weekend"
+              disabled
+              class="checkbox"
+            />
             <span class="checkmark"
               >Enable if you are available on Saturdays and Sundays</span
             >
           </label>
         </div>
-        <div class="vertical-spacer"></div>
+        <!-- prettier-ignore -->
+        <div class="field">
+          <span>Working on National Holidays</span>
+          <label>
+            <input
+              type="checkbox"
+              {% if user.working_on_holidays %}
+              checked="checked"
+              value="True"
+              {% endif %}
+              class="checkbox"
+              name="working_on_holidays"
+              disabled
+            />
+            <span class="checkmark"
+              >Enable if you are available on National Holidays</span
+            >
+          </label>
+        </div>
         <div class="row" id="profile-changes-option" style="display: none;">
           <button
             class="btn outlined"

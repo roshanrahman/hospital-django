@@ -31,6 +31,7 @@ def search_results(query):
         results.append({
             'id': hospital.id,
             'name': hospital.name,
+            'address': hospital.address,
             'type': 'hospital'
         })
     for spec in specializations:
@@ -58,12 +59,12 @@ def get_hospital_json(hospital):
             'id': doctor.id,
             'first_name': doctor.first_name,
             'last_name': doctor.last_name,
-            'specialization_name': doctor.specialization.name,
-            'specialization_id': doctor.specialization.id,
+            'specialization_name': doctor.specialization.name if doctor.specialization else None,
+            'specialization_id': doctor.specialization.id if doctor.specialization else None,
         })
     hospital_json['doctors'] = doctors_json
     spec_json = []
-    for specialization in hospital.specializations.all():
+    for specialization in hospital.specialization.all():
         spec_json.append({
             'id': specialization.id,
             'name': specialization.name,
@@ -137,6 +138,7 @@ def get_data(query, obj_type):
             for hospital in hospitals:
                 hospitals_json.append(get_hospital_json(hospital))
             spec_json['hospitals'] = hospitals_json
+            print(spec_json)
             return spec_json
         except Exception as e:
             print(str(e))
@@ -185,11 +187,17 @@ def is_time_between(begin_time, end_time, check_time=None):
 def get_slots(hospital_id, doctor_id, date):
     hospital = Hospital.objects.get(
         pk=hospital_id)
+    doctor = UserProfile.objects.get(pk=doctor_id)
     start_time = hospital.opening_hours
     end_time = hospital.closing_hours
     duration = hospital.session_duration
     date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
     print(date_obj.isoformat())
+    if(doctor.working_on_weekend):
+        if(date_obj.weekday() == 5 or date_obj.weekday() == 6):
+            return {
+                'working': False
+            }
     appointments = Appointment.objects.filter(
         appointment_status='pending',
         time_slot__date=date_obj, at_hospital=hospital_id, doctor=doctor_id)
@@ -280,7 +288,7 @@ def get_upcoming_appointments(request):
 def send_appointment_confirmation_email(date, patient_name, patient_email, doctor_name, specialization_name, hospital_name, hospital_address, hospital_contact):
     date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
     context = {
-        'date': datetime.datetime.strftime(date, '%a %b %d'),
+        'date': datetime.datetime.strftime(date, '%A, %d %B %Y'),
         'time': datetime.datetime.strftime(date, '%I:%M %p'),
         'patient_name': patient_name,
         'doctor_name': doctor_name,
