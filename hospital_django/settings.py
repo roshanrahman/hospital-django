@@ -163,6 +163,7 @@ USE_TZ = True
 BASE_URL = 'http://localhost:8000'
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'users.UserProfile'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
