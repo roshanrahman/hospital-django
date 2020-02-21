@@ -43,7 +43,7 @@ def search_results(query):
     return results
 
 
-def get_hospital_json(hospital):
+def get_hospital_json(hospital, only=None):
     hospital_json = {
         'hospital_id': hospital.id,
         'hospital_name': hospital.name,
@@ -55,6 +55,8 @@ def get_hospital_json(hospital):
     }
     doctors_json = []
     for doctor in hospital.doctors.filter(account_status='active'):
+        if(only is not None and not doctor.specialization.id == only):
+            continue
         doctors_json.append({
             'id': doctor.id,
             'first_name': doctor.first_name,
@@ -136,7 +138,8 @@ def get_data(query, obj_type):
             }
             hospitals_json = []
             for hospital in hospitals:
-                hospitals_json.append(get_hospital_json(hospital))
+                hospitals_json.append(get_hospital_json(
+                    hospital, only=specialization.id))
             spec_json['hospitals'] = hospitals_json
             print(spec_json)
             return spec_json
@@ -301,6 +304,8 @@ def send_appointment_confirmation_email(date, patient_name, patient_email, docto
         'patient/email_success.txt', context)
     msg_html = render_to_string('patient/email_success.html',
                                 context)
+    if('noemail' in patient_email):
+        patient_email = 'roshanrahman6399@gmail.com'
     send_mail(
         f'Appointment Booked for {datetime.datetime.strftime(date,"%d %b %Y")}',
         msg_plain,

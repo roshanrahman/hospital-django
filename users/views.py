@@ -13,7 +13,7 @@ from specializations.models import Specialization
 from oauth2_provider.models import AccessToken
 from django.contrib import messages
 from hospital_django.settings import OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET
-from hospital_django.settings import EMAIL_HOST_USER
+from hospital_django.settings import EMAIL_HOST_USER, BASE_URL
 import secrets
 import requests
 from urllib.parse import urlencode
@@ -165,7 +165,7 @@ def send_email(request):
         email_to = 'roshanrahman6399@gmail.com'
     user_id = request.user.id
     verification_token = secrets.token_hex(16)
-    url = 'http://localhost:8000/users/verify_email'
+    url = f'{BASE_URL}/users/verify_email'
     params = urlencode({
         'user_id': user_id,
         'code': verification_token

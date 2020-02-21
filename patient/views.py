@@ -94,7 +94,60 @@ def payment(request):
 
 
 def patient_appointments(request):
-    return render(request, 'patient/appointments.html')
+    '''
+    appointment_status = models.CharField(default='pending',
+                                          choices=APPOINTMENT_STATUS_CHOICES, max_length=20)
+    with_specialization = models.ForeignKey(
+        Specialization, on_delete=models.CASCADE, related_name='+',
+    )
+    doctor = models.ForeignKey(UserProfile, limit_choices_to={
+        'user_type': 'doctor'
+    }, on_delete=models.CASCADE, related_name='doctor')
+    patient = models.ForeignKey(UserProfile, limit_choices_to={
+        'user_type': 'patient'
+    }, on_delete=models.CASCADE, related_name='patient')
+    at_hospital = models.ForeignKey(
+        Hospital, on_delete=models.CASCADE, related_name='+')
+    time_slot = models.DateTimeField()
+    notes = models.TextField(null=True)
+
+    '''
+    appointments = Appointment.objects.filter(patient_id=request.user.id)
+    appointments_list = []
+    search_query = request.GET.get('search')
+    sort = request.GET.get('sort')
+    if(sort == 'latest'):
+        appointments = appointments.order_by('-time_slot')
+    elif(sort == 'oldest'):
+        appointments = appointments.order_by('time_slot')
+    for appointment in appointments:
+        slot_end = appointment.time_slot + \
+            timedelta(minutes=appointment.at_hospital.session_duration)
+        searchable_string = f'''{appointment.at_hospital.name}
+        {appointment.patient.first_name}
+        {appointment.patient.last_name}
+        {appointment.doctor.first_name}
+        {appointment.doctor.last_name}'''
+        if(search_query and search_query.lower() not in searchable_string.lower()):
+            continue
+        appointments_list.append({
+            'appointment_status': appointment.appointment_status,
+            'with_specialization': appointment.with_specialization,
+            'doctor': appointment.doctor,
+            'patient': appointment.patient,
+            'at_hospital': appointment.at_hospital,
+            'time_slot': appointment.time_slot,
+            'slot_start': datetime.strftime(appointment.time_slot, '%I:%M %p'),
+            'slot_end': datetime.strftime(slot_end, '%I:%M %p'),
+        })
+    context = {
+        'appointments': appointments_list
+    }
+    if(search_query):
+        context['search'] = search_query
+    if(sort):
+        context['sort'] = sort
+    return render(request, 'patient/appointments.html', context)
 
 
 def patient_profile(request):
