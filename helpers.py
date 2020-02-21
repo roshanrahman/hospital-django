@@ -232,12 +232,19 @@ def get_slots(hospital_id, doctor_id, date):
     }
 
 
-def get_today_appointments(request):
+def get_today_appointments(request, doctor=None):
     today_appointments = Appointment.objects.filter(
         patient=request.user.id,
         time_slot__date=datetime.datetime.now().date(),
         appointment_status='pending'
     )
+    if(doctor):
+        today_appointments = Appointment.objects.filter(
+            doctor=request.user.id,
+            time_slot__date=datetime.datetime.now().date(),
+            appointment_status='pending'
+        )
+    print(today_appointments)
     today_appointments_list = []
     for appointment in today_appointments:
         today_appointments_list.append({
@@ -260,12 +267,18 @@ def get_today_appointments(request):
     return today_appointments_list
 
 
-def get_upcoming_appointments(request):
+def get_upcoming_appointments(request, doctor=None):
     upcoming_appointments = Appointment.objects.filter(
         patient=request.user.id,
         time_slot__date__gt=datetime.datetime.now().date(),
         appointment_status='pending'
     )
+    if(doctor):
+        upcoming_appointments = Appointment.objects.filter(
+            doctor=request.user.id,
+            time_slot__date__gt=datetime.datetime.now().date(),
+            appointment_status='pending'
+        )
     upcoming_appointments_list = []
     for appointment in upcoming_appointments:
         upcoming_appointments_list.append({

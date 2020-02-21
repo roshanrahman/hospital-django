@@ -94,24 +94,6 @@ def payment(request):
 
 
 def patient_appointments(request):
-    '''
-    appointment_status = models.CharField(default='pending',
-                                          choices=APPOINTMENT_STATUS_CHOICES, max_length=20)
-    with_specialization = models.ForeignKey(
-        Specialization, on_delete=models.CASCADE, related_name='+',
-    )
-    doctor = models.ForeignKey(UserProfile, limit_choices_to={
-        'user_type': 'doctor'
-    }, on_delete=models.CASCADE, related_name='doctor')
-    patient = models.ForeignKey(UserProfile, limit_choices_to={
-        'user_type': 'patient'
-    }, on_delete=models.CASCADE, related_name='patient')
-    at_hospital = models.ForeignKey(
-        Hospital, on_delete=models.CASCADE, related_name='+')
-    time_slot = models.DateTimeField()
-    notes = models.TextField(null=True)
-
-    '''
     appointments = Appointment.objects.filter(patient_id=request.user.id)
     appointments_list = []
     search_query = request.GET.get('search')

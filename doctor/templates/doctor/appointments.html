@@ -3,26 +3,50 @@
 <main>
   <div class="columns" style="align-items: center;">
     <h2 class="type">Appointments</h2>
+    <div class="spacer"></div>
+    
   </div>
+  <form action="{% url 'app:doctor:doctor_appointments' %}" method="get">
+    <div class="columns flex-align-center">
+      <div class="column">
+        
+        {% if search %}
+        <a href="{% url 'app:doctor:doctor_appointments' %}">(Remove search filters)</a>
+          {% else %}
+          <span class="grey">Filter by search</span>
 
-  <div class="columns flex-align-center">
-    <div class="column">
-      <span class="grey">FIlter by search</span>
+        {% endif %}
+          
+      </div>
+
+      <div class="field">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search"
+          value="{{ search }}"
+        />
+      </div>
+      <select class="select" name="sort" id="sort" value="{{ sort }}">
+        <option value="latest" 
+        {% if sort == 'latest' %}
+          selected
+        {% endif %}
+          >Latest First</option>
+        <option value="oldest" 
+        {% if sort == 'oldest' %}
+        selected
+      {% endif %}>Oldest First</option>
+      </select>
+      <div class="pseudomargin"></div>
+      <button class="btn" style="margin-top: 8px;">Search</button>
     </div>
-
-    <div class="field"><input type="text" placeholder="Search" /></div>
-    <select class="select" name="sort" id="sort">
-      <option value="latest">Latest First</option>
-      <option value="oldest">Oldest First</option>
-      <option value="alphabetical">Alphabetical (a-z)</option>
-    </select>
-    <div class="pseudomargin"></div>
-    <button class="btn" style="margin-top: 8px;">Search</button>
-  </div>
-
+  </form>
   <hr />
   <div class="vertical-spacer"></div>
   <div class="appointment-list-container">
+    {% if appointments %} {% for appointment in appointments %}
+    <!-- prettier-ignore -->
     <div class="columns">
       <section class="column">
         <div class="card outlined">
@@ -34,7 +58,9 @@
                 </div>
                 <div class="info-content">
                   <div class="label">For</div>
-                  <div class="title primary">Mr. Patient Name</div>
+                  <div class="title primary">
+                    {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -43,15 +69,17 @@
               <div class="info">
                 <div class="info-content" style="text-align: center;">
                   <div class="label">Status</div>
-                  <div class="title primary">Scheduled</div>
+                  <div class="title primary">
+                    {{appointment.appointment_status | title }}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div class="info">
               <div class="info-content align-right">
-                <div class="secondary bolder">31st January 2020</div>
-                <div class="title primary">09:30 AM to 10:30 AM</div>
+                <div class="secondary bolder">{{ appointment.time_slot|date:"M d, Y" }}</div>
+                <div class="title primary">{{ appointment.slot_start }} to {{ appointment.slot_end }}</div>
               </div>
             </div>
           </div>
@@ -64,7 +92,7 @@
                 </div>
                 <div class="info-content">
                   <div class="label">Treatment</div>
-                  <div class="title primary">Speciality Name</div>
+                  <div class="title primary">{{ appointment.with_specialization.name }}</div>
                 </div>
               </div>
             </div>
@@ -75,7 +103,7 @@
                 </div>
                 <div class="info-content">
                   <div class="label">Doctor</div>
-                  <div class="title primary">Dr. Ram Kumar</div>
+                  <div class="title primary">Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</div>
                 </div>
               </div>
             </div>
@@ -85,7 +113,7 @@
                   <i class="material-icons">local_hospital</i>
                 </div>
                 <div class="info-content">
-                  <div class="title secondary">Apollo Hospital</div>
+                  <div class="title secondary">{{ appointment.at_hospital.name }}</div>
                 </div>
               </div>
               <div class="info">
@@ -94,7 +122,7 @@
                 </div>
                 <div class="info-content">
                   <div class="subtitle">
-                    Alagesan Road, Saibaba Colony, Coimbatore - 35
+                    {{ appointment.at_hospital.address }}
                   </div>
                 </div>
               </div>
@@ -104,7 +132,7 @@
                 </div>
                 <div class="info-content">
                   <div class="subtitle">
-                    0422-123123
+                    {{ appointment.at_hospital.contact }}
                   </div>
                 </div>
               </div>
@@ -117,99 +145,19 @@
       </section>
     </div>
     <div class="vertical-spacer"></div>
-    <div class="columns">
-      <section class="column">
-        <div class="card outlined">
-          <div class="columns">
-            <div class="column">
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">face</i>
-                </div>
-                <div class="info-content">
-                  <div class="label">For</div>
-                  <div class="title primary">Mr. Patient Name</div>
-                </div>
-              </div>
-            </div>
 
-            <div class="column">
-              <div class="info">
-                <div class="info-content" style="text-align: center;">
-                  <div class="label">Status</div>
-                  <div class="title primary">Scheduled</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="info">
-              <div class="info-content align-right">
-                <div class="secondary bolder">31st January 2020</div>
-                <div class="title primary">09:30 AM to 10:30 AM</div>
-              </div>
-            </div>
-          </div>
-          <hr class="thin" />
-          <div class="columns">
-            <div class="column">
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">ac_unit</i>
-                </div>
-                <div class="info-content">
-                  <div class="label">Treatment</div>
-                  <div class="title primary">Speciality Name</div>
-                </div>
-              </div>
-            </div>
-            <div class="column">
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">assignment_ind</i>
-                </div>
-                <div class="info-content">
-                  <div class="label">Doctor</div>
-                  <div class="title primary">Dr. Ram Kumar</div>
-                </div>
-              </div>
-            </div>
-            <div class="column">
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">local_hospital</i>
-                </div>
-                <div class="info-content">
-                  <div class="title secondary">Apollo Hospital</div>
-                </div>
-              </div>
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">add_location</i>
-                </div>
-                <div class="info-content">
-                  <div class="subtitle">
-                    Alagesan Road, Saibaba Colony, Coimbatore - 35
-                  </div>
-                </div>
-              </div>
-              <div class="info">
-                <div class="icon">
-                  <i class="material-icons">call</i>
-                </div>
-                <div class="info-content">
-                  <div class="subtitle">
-                    0422-123123
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="icon-btn" style="align-self: flex-end; padding:16px;">
-              <i class="material-icons">more_vert</i>
-            </div>
-          </div>
-        </div>
-      </section>
+    {% endfor %} 
+    {% else %}
+<div class="columns">
+  <section class="column">
+    <div class="card">
+      <div class="columns">
+        <h1 class="type" style="opacity: 0.3; margin: 0 auto; padding: 48px 24px;" id="no-appointments">No appointments found</h1>
+      </div>
     </div>
+  </section>
+</div>
+    {% endif %}
   </div>
 </main>
 {% endblock body %} {% block script %}
