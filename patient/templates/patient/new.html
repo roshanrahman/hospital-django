@@ -87,6 +87,31 @@
       </div>
       <div class="columns" id="hospital-details-doctors"></div>
     </div>
+
+    <div class="card" id="specialization-details">
+      <div class="header" onclick="gotoSearch()">
+        <div class="icon-btn primary">
+          <i class="material-icons">arrow_back</i>
+          <div class="pseudomargin"></div>
+          <span>Back to Search Results</span>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="card-header">
+          <h2 class="type" id="specialization-details-name">Null</h2>
+          <p id="specialization-details-description"></p>
+        </div>
+      </div>
+      <hr style="margin:24px; border: 1px solid rgba(0, 0, 0, 0.075)" />
+      <div class="columns">
+        <div class="column">
+          <span class="type">
+            Hospitals and Doctors with this specialization
+          </span>
+        </div>
+      </div>
+      <div id="specialization-hospital-list"></div>
+    </div>
   </section>
   <form
     id="select-slot-form"
@@ -107,6 +132,10 @@
     doctorDetailsCard.style.display = "none";
     const hospitalDetailsCard = document.querySelector("#hospital-details");
     hospitalDetailsCard.style.display = "none";
+    const specializationDetailsCard = document.querySelector(
+      "#specialization-details"
+    );
+    specializationDetailsCard.style.display = "none";
   });
 
   let userChoice = null;
@@ -123,6 +152,10 @@
     const searchResultsCard = document.querySelector("#search");
     const doctorDetailsCard = document.querySelector("#doctor-details");
     const hospitalDetailsCard = document.querySelector("#hospital-details");
+    const specializationDetailsCard = document.querySelector(
+      "#specialization-details"
+    );
+    specializationDetailsCard.style.display = "none";
     searchResultsCard.style.display = "block";
     doctorDetailsCard.style.display = "none";
     hospitalDetailsCard.style.display = "none";
@@ -150,7 +183,85 @@
       populateDoctorDetailsCard(result);
     } else if (result.type == "hospital") {
       populateHospitalDetailsCard(result);
+    } else if (result.type == "specialization") {
+      populateSpecializationDetailsCard(result);
     }
+  }
+
+  async function populateSpecializationDetailsCard(result) {
+    let fetchResult = await fetch(
+      `http://localhost:8000/patient/get_data?query=${Number(
+        result.id
+      )}&obj_type=${result.type}`
+    );
+    fetchResult = await fetchResult.json();
+    context = {};
+    context["specialization_id"] = Number(result.id);
+    const specializationDetailsCard = document.querySelector(
+      "#specialization-details"
+    );
+    specializationDetailsCard.style.display = "block";
+    const searchResultsCard = document.querySelector("#search");
+    searchResultsCard.style.display = "none";
+    const specializationDetailsName = document.querySelector(
+      "#specialization-details-name"
+    );
+    specializationDetailsName.innerText = fetchResult.name;
+    const specializationDetailsDescription = document.querySelector(
+      "#specialization-details-description"
+    );
+    specializationDetailsDescription.innerText = fetchResult.description;
+    const listElement = document.getElementById("specialization-hospital-list");
+    listElement.innerHTML = "";
+    fetchResult.hospitals.forEach(hospital => {
+      listElement.innerHTML += buildHospitalForSpecialization(hospital);
+    });
+  }
+
+  function buildHospitalForSpecialization(hospital) {
+    const hospitalOpeningHours = moment(hospital.opening_hours, "HH:mm:ss");
+    const hospitalClosingHours = moment(hospital.closing_hours, "HH:mm:ss");
+    return `
+    <br/><br/>
+<div class='columns'>
+  <div class="card-header">
+          <h2 class="type secondary" id="hospital-details-name">${
+            hospital.hospital_name
+          }</h2>
+        </div>
+</div>
+    <div class='columns' style='padding: 24px'>
+    <div class="column">
+      <div class="hospital-card-details-item">
+              <label>Consulting duration</label>
+              <h3>${hospital.session_duration} minutes</h3>
+            </div>
+            <div class="hospital-card-details-item">
+              <label>Opening Hours</label>
+              <h3>${hospitalOpeningHours.format("HH:mm A")}</h3>
+            </div>
+            <div class="hospital-card-details-item">
+              <label>Closing Hours</label>
+              <h3>${hospitalClosingHours.format("HH:mm A")}</h3>
+            </div>
+    </div>
+    <div class='column'>
+      <div class="hospital-card-details-item">
+              <label>Address</label>
+              <h3>${hospital.address}</h3>
+            </div>
+            <div class="hospital-card-details-item">
+              <label>Contact</label>
+              <h3>${hospital.contact}</h3>
+            </div>
+          
+    </div>
+    </div>
+    <div class="columns">${hospital.doctors.map(doctor =>
+      buildDoctorCardForSpecialization(doctor, hospital)
+    )}</div>
+    <hr/>
+    `;
   }
   async function populateHospitalDetailsCard(result) {
     let fetchResult = await fetch(
@@ -166,6 +277,7 @@
     const hospitalDetailsSpecialization = document.querySelector(
       "#hospital-details-specializations"
     );
+    hospitalDetailsSpecialization.innerHTML = "";
     hospitalDetailsSpecialization.innerText = fetchResult.specializations
       .map(spec => spec.name)
       .join([(separator = ", ")]);
@@ -208,6 +320,7 @@
     searchResultsCard.style.display = "none";
     hospitalDetails.style.display = "block";
     const doctorsElement = document.querySelector("#hospital-details-doctors");
+    doctorsElement.innerHTML = "";
     fetchResult.doctors.forEach(doctor => {
       doctorsElement.innerHTML += buildDoctorCard(doctor);
     });
@@ -246,6 +359,42 @@
     searchResultsCard.style.display = "none";
     doctorDetailsCard.style.display = "block";
     buildDoctorCard(doctor);
+  }
+
+  function buildDoctorCardForSpecialization(doctor, hospital) {
+    console.log(doctor);
+    return `
+  <div class="hospital-card">
+          <div class="hospital-card-header">
+            <h1>Dr. ${doctor.first_name} ${doctor.last_name}</h1>
+          
+          </div>
+          <div class="hospital-card-details">
+            <div class="hospital-card-details-item">
+              <label>Specializes in</label>
+              <h3>${doctor.specialization_name}</h3>
+            </div>
+          </div>
+          <div class="hospital-card-actions">
+            <button class="btn primary block" id="${doctor.id}" onclick="onBookDoctorSpecClicked(${doctor.id}, ${hospital.hospital_id})">Book</button>
+          </div>
+        </div>`;
+  }
+
+  function onBookDoctorSpecClicked(doctor_id, hospital_id) {
+    context["doctor_id"] = Number(doctor_id);
+    context["hospital_id"] = Number(hospital_id);
+    const doctorIdInput = document.querySelector("#doctor_id_input");
+    const hospitalIdInput = document.querySelector("#hospital_id_input");
+    const specializationIdInput = document.querySelector(
+      "#specialization_id_input"
+    );
+    const selectSlotForm = document.querySelector("#select-slot-form");
+    doctorIdInput.value = context.doctor_id;
+    hospitalIdInput.value = context.hospital_id;
+    specializationIdInput.value = context.specialization_id;
+    console.log(context);
+    selectSlotForm.submit();
   }
 
   function buildDoctorCard(doctor) {
@@ -354,7 +503,7 @@
         resultElement.innerHTML = `
        
             <span class="result-title primary"
-              >${result.name} ${result.id}<br />
+              >${result.name}<br />
               <span class="grey text-label"
                 >
                 Specializes in
@@ -367,7 +516,7 @@
         resultElement.innerHTML = `
        
             <span class="result-title secondary"
-              >${result.name} ${result.id}<br />
+              >${result.name}<br />
               <span class="grey text-label"
                 >${result.address}
               </span>
@@ -376,7 +525,7 @@
           `;
       } else {
         resultElement.innerHTML = `<span class="result-title primary">${result.name}</span>
-            <span class="result-type secondary">${result.type}</span>`;
+            <span class="result-type secondary">Specialization</span>`;
       }
       resultElement.addEventListener("click", event => {
         handleResultClicked(result);

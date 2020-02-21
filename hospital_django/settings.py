@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+from secret import *
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -160,12 +160,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+BASE_URL = 'http://localhost:8000'
+
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.UserProfile'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'roshan.g@codingmart.com'
-EMAIL_HOST_PASSWORD = 'codingmart6399'
 EMAIL_PORT = 587
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '598521777587-qvcvgl5ubju2ve9le4rfnnppbc1e5ve3.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '2TQXxnAv2NqhuJumO0eZ1yEb'
