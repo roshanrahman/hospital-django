@@ -50,11 +50,21 @@
   </div>
   <div class="field">
     <span>Choose the account type</span>
-    <select name="user_type" required>
+    <select name="user_type" required onchange="onUserTypeChanged(event)">
       <option value="" disabled selected>Select a user type</option>
-
       <option value="doctor">Doctor</option>
       <option value="patient">Patient</option>
+    </select>
+  </div>
+  <div class="field" id="specialization-list" style="display: none;">
+    <span>Select your specialization</span>
+    <select id="specialization-select" required name="specialization">
+      <option value="" disabled selected>Select a specialization</option>
+      {% for specialization in specializations %}
+      <option value="{{ specialization.id }}">
+        {{ specialization.name }}
+      </option>
+      {% endfor %}
     </select>
   </div>
   <div class="field">
@@ -62,4 +72,22 @@
   </div>
 </form>
 
-{% endblock body %}
+{% endblock body %} {% block script %}
+
+<script>
+  function onUserTypeChanged(event) {
+    let user_type = event.target.value;
+    if (user_type === "doctor") {
+      document.getElementById("specialization-list").style.display = "flex";
+      document
+        .getElementById("specialization-select")
+        .setAttribute("required", "true");
+    } else {
+      document.getElementById("specialization-list").style.display = "none";
+      document
+        .getElementById("specialization-select")
+        .removeAttribute("required");
+    }
+  }
+</script>
+{% endblock script %}

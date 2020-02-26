@@ -60,7 +60,8 @@ def register(request):
 
 def fill_missing(request):
     context = {
-        'user': request.user
+        'user': request.user,
+        'specializations': Specialization.objects.all()
     }
     if request.method == 'GET':
         return render(request, 'users/fill_missing.html', context=context)
