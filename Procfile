@@ -1,1 +1,1 @@
-web: gunicorn myproject.wsgi
+web: gunicorn hospital_django.wsgi
