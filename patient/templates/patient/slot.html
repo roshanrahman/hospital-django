@@ -125,7 +125,7 @@
   </section>
   <form
     id="make-appointment-form"
-    action="http://localhost:8000/patient/payment"
+    action="http://djangoproject-hospital.herokuapp.com/patient/payment"
     method="POST"
     style="display: none;"
   >
@@ -277,7 +277,7 @@
 
   async function fetchSlots() {
     let result = await fetch(
-      "http://localhost:8000/patient/get_slots?hospital_id={{ hospital_id }}&doctor_id={{ doctor_id }}&date=" +
+      "http://djangoproject-hospital.herokuapp.com/patient/get_slots?hospital_id={{ hospital_id }}&doctor_id={{ doctor_id }}&date=" +
         selectedDate.format("YYYY-MM-DD")
     );
     result = await result.json();

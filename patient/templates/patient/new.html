@@ -115,7 +115,7 @@
   </section>
   <form
     id="select-slot-form"
-    action="http://localhost:8000/patient/select_slot"
+    action="http://djangoproject-hospital.herokuapp.com/patient/select_slot"
     method="POST"
     style="display: none;"
   >
@@ -168,14 +168,15 @@
       return;
     }
     buildSearchResultsList(false, true);
-    fetch(`http://localhost:8000/patient/search?query=${query}`, {}).then(
-      response => {
-        response.json().then(responseData => {
-          console.log(responseData);
-          buildSearchResultsList(responseData, false);
-        });
-      }
-    );
+    fetch(
+      `http://djangoproject-hospital.herokuapp.com/patient/search?query=${query}`,
+      {}
+    ).then(response => {
+      response.json().then(responseData => {
+        console.log(responseData);
+        buildSearchResultsList(responseData, false);
+      });
+    });
   }
 
   function handleResultClicked(result) {
@@ -190,7 +191,7 @@
 
   async function populateSpecializationDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
+      `http://djangoproject-hospital.herokuapp.com/patient/get_data?query=${Number(
         result.id
       )}&obj_type=${result.type}`
     );
@@ -265,7 +266,7 @@
   }
   async function populateHospitalDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
+      `http://djangoproject-hospital.herokuapp.com/patient/get_data?query=${Number(
         result.id
       )}&obj_type=${result.type}`
     );
@@ -328,7 +329,7 @@
 
   async function populateDoctorDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
+      `http://djangoproject-hospital.herokuapp.com/patient/get_data?query=${Number(
         result.id
       )}&obj_type=${result.type}`
     );
