@@ -195,26 +195,33 @@ def get_slots(hospital_id, doctor_id, date):
     end_time = hospital.closing_hours
     duration = hospital.session_duration
     date_obj = datetime.datetime.strptime(date, '%Y-%m-%d')
-    print(date_obj.isoformat())
-    if(doctor.working_on_weekend):
-        if(date_obj.weekday() == 5 or date_obj.weekday() == 6):
-            return {
-                'working': False
-            }
+    availability = doctor.weekday_availability
+    day_of_week = date_obj.weekday()
+    availability = availability[day_of_week]
+    if(availability == 0):
+        return {
+            'working': False
+        }
     appointments = Appointment.objects.filter(
         appointment_status='pending',
         time_slot__date=date_obj, at_hospital=hospital_id, doctor=doctor_id)
     print(appointments)
     slots = build_time_slots(start_time, end_time, duration)
+    count = dict()
     for appointment in appointments:
         appointment.time_slot.replace(second=0)
+        if(appointment.time_slot.strftime('%m/%d/%Y') not in count):
+            count[appointment.time_slot.strftime('%m/%d/%Y')] = 1
+        else:
+            count[appointment.time_slot.strftime('%m/%d/%Y')] += 1
         for slot in slots:
             if(is_time_between(
                 appointment.time_slot.time(),
                 (appointment.time_slot + datetime.timedelta(minutes=duration)).time(),
                 slot['start']['full']
             )):
-                slot['available'] = False
+                if(count[appointment.time_slot.strftime('%m/%d/%Y')] >= availability):
+                    slot['available'] = False
     morning = []
     noon = []
     evening = []
@@ -250,6 +257,7 @@ def get_today_appointments(request, doctor=None):
         today_appointments_list.append({
             'id': appointment.id,
             'specialization_name': appointment.with_specialization.name,
+            'appointment_status': appointment.appointment_status,
             'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',
             'hospital': {
                 'name': appointment.at_hospital.name,
@@ -284,6 +292,7 @@ def get_upcoming_appointments(request, doctor=None):
         upcoming_appointments_list.append({
             'id': appointment.id,
             'specialization_name': appointment.with_specialization.name,
+            'appointment_status': appointment.appointment_status,
             'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',
             'hospital': {
                 'name': appointment.at_hospital.name,
@@ -326,3 +335,40 @@ def send_appointment_confirmation_email(date, patient_name, patient_email, docto
         [patient_email],
         html_message=msg_html
     )
+
+
+def send_appointment_cancellation_email(date, reason, patient_name, patient_email, doctor_name, specialization_name, hospital_name, hospital_address, hospital_contact):
+    date = datetime.datetime.strptime(date, '%Y-%m-%d %H:%M')
+    context = {
+        'date': datetime.datetime.strftime(date, '%A, %d %B %Y'),
+        'time': datetime.datetime.strftime(date, '%I:%M %p'),
+        'patient_name': patient_name,
+        'doctor_name': doctor_name,
+        'specialization_name': specialization_name,
+        'hospital_name': hospital_name,
+        'hospital_address': hospital_address,
+        'hospital_contact': hospital_contact,
+        'reason': reason
+    }
+    msg_plain = render_to_string(
+        'patient/email_cancelled.txt', context)
+    msg_html = render_to_string('patient/email_cancelled.html',
+                                context)
+    if('noemail' in patient_email):
+        patient_email = 'roshanrahman6399@gmail.com'
+    send_mail(
+        f'Appointment Cancelled - {datetime.datetime.strftime(date,"%d %b %Y")}',
+        msg_plain,
+        EMAIL_HOST_USER,
+        [patient_email],
+        html_message=msg_html
+    )
+
+
+def redirect_to_correct_account(request, intended_account):
+    try:
+        if request.user.user_type == intended_account:
+            return False
+    except Exception:
+        pass
+    return True

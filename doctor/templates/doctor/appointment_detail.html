@@ -1,0 +1,205 @@
+{% extends 'doctor/base.html' %}
+<!---->{% block body %}
+<main>
+  <div class="columns" style="align-items: center;">
+    <h2 class="type">Appointment Details</h2>
+    <div class="spacer"></div>
+
+    {% if appointment.appointment_status == 'pending' %}
+    <span class="status-chip" style="background-color: rgb(156, 116, 4);"
+      >Scheduled</span
+    >
+    {% endif %} {% if appointment.appointment_status == 'completed' %}
+    <span class="status-chip" style="background-color: rgb(4, 156, 80);"
+      >Completed</span
+    >
+    {% endif %} {% if appointment.appointment_status == 'cancelled' %}
+    <span class="status-chip" style="background-color: rgb(156, 4, 4);"
+      >Cancelled</span
+    >
+    {% endif %}
+  </div>
+
+  <div class="vertical-spacer"></div>
+  <div class="hospital-card-details-item">
+    <label>Patient Name</label>
+    <h3>
+      {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
+    </h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Patient Email</label>
+    <h3>{{ appointment.patient.email }}</h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Patient Contact</label>
+    <h3>{{ appointment.patient.mobile }}</h3>
+  </div>
+  <div class="vertical-spacer"></div>
+  <hr />
+  <div class="vertical-spacer"></div>
+  <div class="hospital-card-details-item">
+    <label>Specialization of treatment required</label>
+    <h3>
+      {{ appointment.with_specialization.name }}
+    </h3>
+  </div>
+  <div class="vertical-spacer"></div>
+  <hr />
+  <div class="vertical-spacer"></div>
+
+  <div class="hospital-card-details-item">
+    <label>Appointment Date</label>
+    <h3>
+      {{ appointment.time_slot|date:"D d M Y" }}
+    </h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Appointment Time Slot</label>
+    <h3>
+      {{ appointment.time_slot|date:"h:i A" }}
+    </h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Appointment Duration</label>
+    <h3>
+      {{ appointment.at_hospital.session_duration }} minutes
+    </h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Appointment Status</label>
+    <!-- prettier-ignore -->
+    <h3>
+      {% if appointment.appointment_status == 'pending' %} 
+      <span class="warning">Appointment is scheduled</span>
+      {% endif %} 
+      {% if appointment.appointment_status == 'completed' %} 
+      <span class="success">Appointment was completed</span> 
+      {% endif %} 
+      {% if appointment.appointment_status == 'cancelled' %} 
+      <span class='error'>Appointment was cancelled</span> 
+      {% endif %}
+    </h3>
+  </div>
+  <div class="vertical-spacer"></div>
+  <hr />
+  <div class="vertical-spacer"></div>
+
+  <div class="hospital-card-details-item">
+    <label>Hospital Address</label>
+    <h3>{{ appointment.at_hospital.name }}</h3>
+    <h3>{{ appointment.at_hospital.address }}</h3>
+  </div>
+  <div class="hospital-card-details-item">
+    <label>Hospital Contact</label>
+    <h3>{{ appointment.at_hospital.contact }}</h3>
+  </div>
+  <div class="vertical-spacer"></div>
+  <hr />
+
+  <form action="{% url 'app:doctor:doctor_appointments' %}" method="get"></form>
+
+  {% if allow_actions %}
+
+  <div class="columns flex-align-center" id="actions-section">
+    <div class="column">
+      <span class="grey">Appointment Actions</span>
+    </div>
+
+    <div class="field">
+      <button
+        class="btn"
+        onclick="cancelAppointment();"
+        style="margin-top: 8px;"
+      >
+        Cancel Appointment
+      </button>
+    </div>
+
+    {% if today %}
+    <div class="field">
+      <form action="{{ request.path }}" method="post">
+        {% csrf_token %}
+        <input
+          type="text"
+          name="status"
+          value="completed"
+          style="display: none;"
+        />
+        <button type="submit" class="btn primary" style="margin-top: 8px;">
+          Mark Appointment Complete
+        </button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+
+  {% endif %}
+  <div class="columns" id="cancel-section" style="display: none;">
+    <form action="{{ request.path }}" method="post">
+      <div
+        class="column"
+        style="display: flex; flex-direction: column;"
+        id="cancel-form"
+      >
+        <h3>Please state the reason for cancelling</h3>
+        {% csrf_token %}
+        <input
+          type="text"
+          name="status"
+          value="cancelled"
+          style="display: none;"
+        />
+        <textarea
+          required
+          name="reason"
+          placeholder="Reason for cancelling"
+          style="width: 100%; font-size: 20px; padding: 8px;"
+        ></textarea>
+        <div class="vertical-spacer"></div>
+
+        <div class="column" style="display: flex; justify-content: flex-end;">
+          <button
+            onclick="hideCancel()"
+            class="btn primary"
+            style="align-self: flex-end;"
+          >
+            Go Back
+          </button>
+          <div class="pseudomargin"></div>
+          <button class="btn" type="submit" style="align-self: flex-end;">
+            Confirm Cancel
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="vertical-spacer"></div>
+</main>
+{% endblock body %} {% block script %}
+
+<script>
+  var selectedItemId = "doctor_appointments";
+  const actionSection = document.querySelector("#actions-section");
+  const cancelSection = document.querySelector("#cancel-section");
+  function showCancel() {
+    actionSection.style.display = "none";
+    cancelSection.style.display = "flex";
+  }
+  function hideCancel() {
+    actionSection.style.display = "flex";
+    cancelSection.style.display = "none";
+  }
+  function cancelAppointment() {
+    const cancelForm = document.querySelector("#cancel-form");
+    if (
+      confirm(
+        "Are you sure you want to proceed with cancelling the appointment? This action is not reversible."
+      )
+    ) {
+      cancelForm.submit();
+    }
+  }
+</script>
+{% endblock script %} {% block title %} {{ appointment.patient.first_name }} for
+{{ appointment.with_specialization.name }} {% endblock title %}

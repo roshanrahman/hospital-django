@@ -7,6 +7,8 @@ app_name = 'doctor'
 urlpatterns = [
     path('appointments', views.doctor_appointments,
          name="doctor_appointments"),
+    path('appointments/<int:appointment_id>',
+         views.appointment_details, name='appointment_detail'),
     path('profile', views.doctor_profile, name="profile"),
     path('', views.index, name="index"),
 ]

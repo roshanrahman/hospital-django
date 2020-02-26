@@ -63,25 +63,6 @@
         </div>
         <!-- prettier-ignore -->
         <div class="field">
-          <span>Working on Weekends</span>
-          <label>
-            <input
-              type="checkbox"
-              {% if user.working_on_weekend %}
-              checked="checked"
-              value="True"
-              {% endif %}
-              name="working_on_weekend"
-              disabled
-              class="checkbox"
-            />
-            <span class="checkmark"
-              >Enable if you are available on Saturdays and Sundays</span
-            >
-          </label>
-        </div>
-        <!-- prettier-ignore -->
-        <div class="field">
           <span>Working on National Holidays</span>
           <label>
             <input
@@ -95,10 +76,174 @@
               disabled
             />
             <span class="checkmark"
-              >Enable if you are available on National Holidays</span
+              >Enable if you are working on National Holidays</span
             >
           </label>
         </div>
+        <hr />
+        <h3 class="type" style="padding-left: 24px;">
+          Select your working preference for each week day
+        </h3>
+        <div
+          class="container"
+          style="display: flex; flex-direction: column; max-width: 400px;"
+        >
+          <div
+            class="column"
+            style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+          >
+            <span>Monday</span>
+            <select name="monday" id="0" disabled>
+              <option value="" disabled>Select availability</option>
+              <option value="0" {% if user.weekday_availability.0 == 0 %}
+              selected
+            {% endif %}>No appointments</option>
+              <option value="1" {% if user.weekday_availability.0 == 1 %}
+              selected
+            {% endif %}>1 person per slot</option>
+              <option value="2" {% if user.weekday_availability.0 == 2 %}
+              selected
+            {% endif %}>2 people per slot</option>
+              <option value="3" {% if user.weekday_availability.0 == 3 %}
+              selected
+            {% endif %}>3 people per slot</option>
+            </select>
+          </div>
+          <div class="vertical-spacer"></div>
+          <div
+            class="column"
+            style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+          >
+            <span>Tuesday</span>
+            <select name="tuesday" id="0" disabled>
+              <option value="" disabled>Select availability</option>
+              <option value="0" {% if user.weekday_availability.1 == 0 %}
+              selected
+            {% endif %}>No appointments</option>
+              <option value="1" {% if user.weekday_availability.1 == 1 %}
+              selected
+            {% endif %}>1 person per slot</option>
+              <option value="2" {% if user.weekday_availability.1 == 2 %}
+              selected
+            {% endif %}>2 people per slot</option>
+              <option value="3" {% if user.weekday_availability.1 == 3 %}
+              selected
+            {% endif %}>3 people per slot</option>
+            </select>
+          </div>
+          <div class="vertical-spacer"></div>
+          <div
+            class="column"
+            style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+          >
+            <span>Wednesday</span>
+            <select name="wednesday" id="0" disabled>
+              <option value="" disabled>Select availability</option>
+              <option value="0" {% if user.weekday_availability.2 == 0 %}
+              selected
+            {% endif %}>No appointments</option>
+              <option value="1" {% if user.weekday_availability.2 == 1 %}
+              selected
+            {% endif %}>1 person per slot</option>
+              <option value="2" {% if user.weekday_availability.2 == 2 %}
+              selected
+            {% endif %}>2 people per slot</option>
+              <option value="3" {% if user.weekday_availability.2 == 3 %}
+              selected
+            {% endif %}>3 people per slot</option>
+            </select>
+          </div>
+          <div class="vertical-spacer"></div>
+          <div
+            class="column"
+            style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+          >
+            <span>Thursday</span>
+            <select name="thursday" id="0" disabled>
+              <option value="" disabled>Select availability</option>
+              <option value="0" {% if user.weekday_availability.3 == 0 %}
+              selected
+            {% endif %}>No appointments</option>
+              <option value="1" {% if user.weekday_availability.3 == 1 %}
+              selected
+            {% endif %}>1 person per slot</option>
+              <option value="2" {% if user.weekday_availability.3 == 2 %}
+              selected
+            {% endif %}>2 people per slot</option>
+              <option value="3" {% if user.weekday_availability.3 == 3 %}
+              selected
+            {% endif %}>3 people per slot</option>
+            </select>
+          </div>
+          <div class="vertical-spacer"></div>
+          <div
+            class="column"
+            style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+          >
+            <span>Friday</span>
+            <select name="friday" id="0" disabled>
+              <option value="" disabled>Select availability</option>
+              <option value="0" {% if user.weekday_availability.4 == 0 %}
+              selected
+            {% endif %}>No appointments</option>
+              <option value="1" {% if user.weekday_availability.4 == 1 %}
+              selected
+            {% endif %}>1 person per slot</option>
+              <option value="2" {% if user.weekday_availability.4 == 2 %}
+              selected
+            {% endif %}>2 people per slot</option>
+              <option value="3" {% if user.weekday_availability.4 == 3 %}
+              selected
+            {% endif %}>3 people per slot</option>
+            </select>
+          </div>
+          <div class="vertical-spacer"></div>
+          <div
+          class="column"
+          style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+        >
+          <span>Saturday</span>
+          <select name="saturday" id="0" disabled>
+            <option value="" disabled>Select availability</option>
+            <option value="0" {% if user.weekday_availability.5 == 0 %}
+            selected
+          {% endif %}>No appointments</option>
+            <option value="1" {% if user.weekday_availability.5 == 1 %}
+            selected
+          {% endif %}>1 person per slot</option>
+            <option value="2" {% if user.weekday_availability.5 == 2 %}
+            selected
+          {% endif %}>2 people per slot</option>
+            <option value="3" {% if user.weekday_availability.5 == 3 %}
+            selected
+          {% endif %}>3 people per slot</option>
+          </select>
+        </div>
+        <div class="vertical-spacer"></div>
+        <div
+          class="column"
+          style="padding-left: 24px; display: flex; align-items: center; justify-content: space-between;"
+        >
+          <span>Sunday</span>
+          <select name="sunday" id="0" disabled>
+            <option value="" disabled>Select availability</option>
+            <option value="0" {% if user.weekday_availability.6 == 0 %}
+            selected
+          {% endif %}>No appointments</option>
+            <option value="1" {% if user.weekday_availability.6 == 1 %}
+            selected
+          {% endif %}>1 person per slot</option>
+            <option value="2" {% if user.weekday_availability.6 == 2 %}
+            selected
+          {% endif %}>2 people per slot</option>
+            <option value="3" {% if user.weekday_availability.6 == 3 %}
+            selected
+          {% endif %}>3 people per slot</option>
+          </select>
+        </div>
+        <div class="vertical-spacer"></div>
+        </div>
+        <div class="vertical-spacer"></div>
         <div class="row" id="profile-changes-option" style="display: none;">
           <button
             class="btn outlined"
@@ -131,7 +276,7 @@
   });
 
   function enableForm(status) {
-    const formElements = document.querySelectorAll("input");
+    const formElements = document.querySelectorAll("input, select");
     formElements.forEach(element => {
       if (element.name == "email") return;
       if (status) {

@@ -19,7 +19,7 @@
   {% for appointment in today %}
   <div class="columns">
     <section class="column">
-      <div class="card">
+      <div class="card clickable"  onclick="gotoAppointmentDetail('{{ appointment.id }}')">
         <div class="columns">
           <div class="column">
             <div class="info">
@@ -37,7 +37,20 @@
             <div class="info">
               <div class="info-content" style="text-align: center;">
                 <div class="label">Status</div>
-                <div class="title primary">Scheduled</div>
+                <div class="title primary
+                  {% if appointment.appointment_status == 'pending' %}
+                    warning
+                  {% endif %}
+                  {% if appointment.appointment_status == 'completed' %}
+                    success
+                  {% endif %}
+                  {% if appointment.appointment_status == 'cancelled' %}
+                    error
+                  {% endif %}
+                    "
+                  >
+                    {{appointment.appointment_status | title }}
+                  </div>
               </div>
             </div>
           </div>
@@ -143,7 +156,7 @@
     {% for appointment in upcoming %}
     <div class="columns">
       <section class="column">
-        <div class="card outlined">
+        <div class="card outlined clickable"  onclick="gotoAppointmentDetail('{{ appointment.id }}')">
           <div class="columns">
             <div class="column">
               <div class="info">
@@ -161,7 +174,20 @@
               <div class="info">
                 <div class="info-content" style="text-align: center;">
                   <div class="label">Status</div>
-                  <div class="title primary">Scheduled</div>
+                  <div class="title primary
+                  {% if appointment.appointment_status == 'pending' %}
+                    warning
+                  {% endif %}
+                  {% if appointment.appointment_status == 'completed' %}
+                    success
+                  {% endif %}
+                  {% if appointment.appointment_status == 'cancelled' %}
+                    error
+                  {% endif %}
+                    "
+                  >
+                    {{appointment.appointment_status | title }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -273,5 +299,9 @@
 {% block script %}
 <script>
   var selectedItemId = "dashboard";
+  function gotoAppointmentDetail(appointmentId) {
+    appointmentId = Number(appointmentId);
+    window.open(`{% url 'app:patient:patient_appointments' %}/${appointmentId}`); 
+  }
 </script>
 {% endblock script %}

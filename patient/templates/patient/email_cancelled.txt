@@ -1,0 +1,18 @@
+Your appointment for {{ date }} at {{ time }} has been cancelled.
+Dear {{ patient_name }}, your appointment with the following details has been cancelled.
+
+Timing: {{ date }} {{ time }}
+
+Patient Name: {{ patient_name }}
+
+Doctor: {{ doctor_name }}
+
+Treatment Specialization: {{ specialization_name }}
+
+Hospital: {{ hospital_name }}
+
+Address: {{ hospital_address }}
+
+Contact: {{ hospital_contact }}
+
+Status: Cancelled ({{ reason }})

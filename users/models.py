@@ -38,7 +38,7 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     email_verification_code = models.CharField(
         max_length=255, blank=True, null=True, default=None)
     weekday_availability = ArrayField(
-        models.IntegerField(blank=True, default=1), size=7, default=[1, 1, 1, 1, 1, 1, 1])
+        models.IntegerField(blank=True, default=1), size=7, default=list((1, 1, 1, 1, 1, 1, 1)))
     working_on_holidays = models.BooleanField(default=False)
     other_holidays = models.TextField(null=True, blank=True)
     USERNAME_FIELD = 'email'

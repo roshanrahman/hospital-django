@@ -127,7 +127,7 @@ form {
   width: 100%;
 }
 
-.field > select {
+select {
   padding: 8px;
   background-color: white;
   border-radius: 8px;
@@ -264,6 +264,15 @@ main {
 .card.outlined {
   box-shadow: none;
   border: 2px solid rgba(0, 0, 0, 0.075);
+}
+
+.card.outlined:hover {
+  box-shadow: none;
+  border: 2px solid rgba(0, 0, 0, 0.329);
+}
+
+.clickable:active {
+  transform: scale(0.99);
 }
 
 .info {
@@ -674,4 +683,16 @@ span.type {
   padding: 24px;
   display: flex;
   justify-content: space-around;
+}
+
+.no-wrap {
+  flex-wrap: nowrap;
+}
+
+.status-chip {
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 1.5em;
+  text-transform: uppercase;
+  color: white;
 }
