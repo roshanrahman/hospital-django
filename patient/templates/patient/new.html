@@ -115,7 +115,7 @@
   </section>
   <form
     id="select-slot-form"
-    action="http://localhost:8000/patient/select_slot"
+    action="/patient/select_slot"
     method="POST"
     style="display: none;"
   >
@@ -168,14 +168,12 @@
       return;
     }
     buildSearchResultsList(false, true);
-    fetch(`http://localhost:8000/patient/search?query=${query}`, {}).then(
-      response => {
-        response.json().then(responseData => {
-          console.log(responseData);
-          buildSearchResultsList(responseData, false);
-        });
-      }
-    );
+    fetch(`/patient/search?query=${query}`, {}).then(response => {
+      response.json().then(responseData => {
+        console.log(responseData);
+        buildSearchResultsList(responseData, false);
+      });
+    });
   }
 
   function handleResultClicked(result) {
@@ -190,9 +188,7 @@
 
   async function populateSpecializationDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
-        result.id
-      )}&obj_type=${result.type}`
+      `/patient/get_data?query=${Number(result.id)}&obj_type=${result.type}`
     );
     fetchResult = await fetchResult.json();
     context = {};
@@ -265,9 +261,7 @@
   }
   async function populateHospitalDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
-        result.id
-      )}&obj_type=${result.type}`
+      `/patient/get_data?query=${Number(result.id)}&obj_type=${result.type}`
     );
     fetchResult = await fetchResult.json();
     const hospitalDetailsName = document.querySelector(
@@ -328,9 +322,7 @@
 
   async function populateDoctorDetailsCard(result) {
     let fetchResult = await fetch(
-      `http://localhost:8000/patient/get_data?query=${Number(
-        result.id
-      )}&obj_type=${result.type}`
+      `/patient/get_data?query=${Number(result.id)}&obj_type=${result.type}`
     );
     fetchResult = await fetchResult.json();
     console.log(fetchResult);

@@ -60,7 +60,8 @@ def register(request):
 
 def fill_missing(request):
     context = {
-        'user': request.user
+        'user': request.user,
+        'specializations': Specialization.objects.all()
     }
     if request.method == 'GET':
         return render(request, 'users/fill_missing.html', context=context)
@@ -106,7 +107,7 @@ def login(request):
             messages.error(
                 request, 'No account exists with the email address you provided')
             return redirect('users:login')
-        r = requests.post('http://0.0.0.0:8000/o/token/',
+        r = requests.post(f'{BASE_URL}/o/token/',
                           data={
                               'grant_type': 'password',
                               'username': request.POST['email'],

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from hospital_django.settings import BASE_URL
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -28,7 +28,7 @@ def register(request):
     )
     # Then we get a token for the created user.
     # This could be done differently
-    r = requests.post('http://0.0.0.0:8000/o/token/',
+    r = requests.post(f'{BASE_URL}/o/token/',
                       data={
                           'grant_type': 'password',
                           'username': request.data['username'],
@@ -48,7 +48,7 @@ def token(request):
     {"username": "username", "password": "1234abcd"}
     '''
     r = requests.post(
-        'http://0.0.0.0:8000/o/token/',
+        f'{BASE_URL}/o/token/',
         data={
             'grant_type': 'password',
             'username': request.data['username'],
@@ -68,7 +68,7 @@ def refresh_token(request):
     {"refresh_token": "<token>"}
     '''
     r = requests.post(
-        'http://0.0.0.0:8000/o/token/',
+        f'{BASE_URL}/o/token/',
         data={
             'grant_type': 'refresh_token',
             'refresh_token': request.data['refresh_token'],
@@ -87,7 +87,7 @@ def revoke_token(request):
     {"token": "<token>"}
     '''
     r = requests.post(
-        'http://0.0.0.0:8000/o/revoke_token/',
+        f'{BASE_URL}/o/revoke_token/',
         data={
             'token': request.data['token'],
             'client_secret': OAUTH_CLIENT_SECRET,
