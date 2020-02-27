@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 users/__pycache__/*
 */__pycache__/*
+secret.py
