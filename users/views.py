@@ -107,7 +107,7 @@ def login(request):
             messages.error(
                 request, 'No account exists with the email address you provided')
             return redirect('users:login')
-        r = requests.post(f'{BASE_URL}/token/',
+        r = requests.post(f'{BASE_URL}/o/token/',
                           data={
                               'grant_type': 'password',
                               'username': request.POST['email'],
