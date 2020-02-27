@@ -136,12 +136,8 @@
 
   {% endif %}
   <div class="columns" id="cancel-section" style="display: none;">
-    <form action="{{ request.path }}" method="post">
-      <div
-        class="column"
-        style="display: flex; flex-direction: column;"
-        id="cancel-form"
-      >
+    <form action="{{ request.path }}" method="post" id="cancel-form">
+      <div class="column" style="display: flex; flex-direction: column;">
         <h3>Please state the reason for cancelling</h3>
         {% csrf_token %}
         <input
