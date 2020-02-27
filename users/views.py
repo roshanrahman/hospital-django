@@ -77,6 +77,8 @@ def fill_missing(request):
             user.last_name = form_data.get('last_name')
             user.mobile = form_data.get('mobile')
             user.user_type = form_data.get('user_type')
+            if(form_data.get('user_type') == 'doctor'):
+                user.specialization_id = form_data.get('specialization', None)
             user.account_status = "active"
             user.save()
         except IntegrityError as err:
