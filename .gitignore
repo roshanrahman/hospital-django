@@ -138,3 +138,6 @@ hospital_django/__pycache__/settings.cpython-36.pyc
 oauth/__pycache__/views.cpython-36.pyc
 users/__pycache__/models.cpython-36.pyc
 users/__pycache__/views.cpython-36.pyc
+users/__pycache__/*
+oauth/__pycache__
+secret.py

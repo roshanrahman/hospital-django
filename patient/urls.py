@@ -7,6 +7,8 @@ app_name = 'patient'
 urlpatterns = [
     path('appointments', views.patient_appointments,
          name="patient_appointments"),
+    path('appointments/<int:appointment_id>',
+         views.appointment_details, name='appointment_detail'),
     path('new_appointment', views.new_appointment, name="new_appointment"),
     path('select_slot', views.select_slot, name="select_slot"),
     path('get_slots', views.get_slots_json, name='get_slots'),

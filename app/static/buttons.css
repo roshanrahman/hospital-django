@@ -16,8 +16,12 @@ Primary (blue) - #2887e0
   opacity: 0.9;
   width: fit-content;
   height: fit-content;
+  transition: 0.15s all ease;
 }
 
+.btn:active {
+  transform: scale(0.95);
+}
 .btn.block {
   width: 100%;
 }

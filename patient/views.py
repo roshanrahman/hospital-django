@@ -8,7 +8,7 @@ from hospital.models import Hospital
 from appointment.models import Appointment
 from specializations.models import Specialization
 from users.models import UserProfile
-from helpers import send_appointment_confirmation_email, search_results, get_data, build_time_slots, get_slots, get_today_appointments, get_upcoming_appointments
+from helpers import redirect_to_correct_account, send_appointment_cancellation_email, send_appointment_confirmation_email, search_results, get_data, build_time_slots, get_slots, get_today_appointments, get_upcoming_appointments
 from datetime import datetime, timedelta
 
 
@@ -32,6 +32,8 @@ def new_appointment(request):
     context = {
         'user': request.user
     }
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     if(request.GET.get('search', None) is not None):
         query = request.GET.get('search')
         context['results'] = search_results(query)
@@ -42,6 +44,8 @@ def new_appointment(request):
 
 @login_required(login_url='/users/login')
 def select_slot(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     if request.method == 'POST':
         doctor_id = request.POST.get('doctor_id')
         hospital_id = request.POST.get('hospital_id')
@@ -63,6 +67,8 @@ def select_slot(request):
 
 @login_required(login_url='/users/login')
 def payment(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     if(redirect_if_no_session(request)):
         return redirect_if_no_session(request)
     patient_id = request.user.id
@@ -93,7 +99,10 @@ def payment(request):
     return render(request, 'patient/payment.html', context)
 
 
+@login_required(login_url='/')
 def patient_appointments(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     appointments = Appointment.objects.filter(patient_id=request.user.id)
     appointments_list = []
     search_query = request.GET.get('search')
@@ -109,10 +118,13 @@ def patient_appointments(request):
         {appointment.patient.first_name}
         {appointment.patient.last_name}
         {appointment.doctor.first_name}
-        {appointment.doctor.last_name}'''
+        {appointment.doctor.last_name}
+        {appointment.appointment_status}
+        '''
         if(search_query and search_query.lower() not in searchable_string.lower()):
             continue
         appointments_list.append({
+            'id': appointment.id,
             'appointment_status': appointment.appointment_status,
             'with_specialization': appointment.with_specialization,
             'doctor': appointment.doctor,
@@ -132,7 +144,10 @@ def patient_appointments(request):
     return render(request, 'patient/appointments.html', context)
 
 
+@login_required(login_url='/')
 def patient_profile(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     if(request.method == 'POST'):
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -160,6 +175,8 @@ def get_data_json(request):
 
 @login_required(login_url='/users/login')
 def index(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     delete_appointment_session(request)
     try:
         del request.session['appointment']
@@ -187,7 +204,10 @@ def get_slots_json(request):
     return JsonResponse(slots, safe=False)
 
 
+@login_required(login_url='/')
 def make_appointment(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     if(redirect_if_no_session(request)):
         return redirect_if_no_session(request)
     patient_id = request.user.id
@@ -224,6 +244,51 @@ def make_appointment(request):
     return redirect('app:patient:success')
 
 
+@login_required(login_url='/')
 def success(request):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
     context = request.session['appointment']
     return render(request, 'patient/success.html', context)
+
+
+@login_required(login_url='/')
+def appointment_details(request, appointment_id=None):
+    if redirect_to_correct_account(request, 'patient'):
+        return redirect('app:index')
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        reason = request.POST.get('reason', 'Reason not specified')
+        try:
+            appointment = Appointment.objects.get(pk=appointment_id)
+            appointment.appointment_status = status
+            appointment.notes = reason
+            appointment.save()
+            if(status == 'cancelled'):
+                send_appointment_cancellation_email(
+                    appointment.time_slot.strftime('%Y-%m-%d %H:%M'),
+                    reason,
+                    appointment.patient.first_name,
+                    appointment.patient.email,
+                    appointment.doctor.first_name,
+                    appointment.with_specialization.name,
+                    appointment.at_hospital.name,
+                    appointment.at_hospital.address,
+                    appointment.at_hospital.contact
+                )
+        except Exception as e:
+            print(e)
+        return redirect('app:patient:patient_appointments')
+    context = dict()
+    try:
+        appointment = Appointment.objects.get(pk=appointment_id)
+        if appointment.time_slot.date() <= datetime.now().date():
+            context['today'] = True
+        if appointment.appointment_status == 'pending':
+            context['allow_actions'] = True
+        context['appointment'] = appointment
+
+    except Exception as e:
+        print(e)
+        return redirect('app:patient:patient_appointments')
+    return render(request, 'patient/appointment_detail.html', context)

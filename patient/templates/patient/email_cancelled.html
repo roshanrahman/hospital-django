@@ -1,0 +1,17 @@
+<h1>
+  <span style="color: #ff6161;"
+    >Your appointment for {{ date }} at {{ time }} has been cancelled.
+  </span>
+</h1>
+<p>
+  Dear {{ patient_name }}, your appointment with the following details has been
+  cancelled.
+</p>
+<p><strong>Timing: {{ date }} {{ time }}</strong></p>
+<p><strong>Patient Name:</strong> {{ patient_name }}</p>
+<p><strong>Doctor:</strong> {{ doctor_name }}</p>
+<p><strong>Treatment Specialization:</strong> {{ specialization_name }}</p>
+<p><strong>Hospital:</strong> {{ hospital_name }}</p>
+<p><strong>Address:</strong> {{ hospital_address }}</p>
+<p><strong>Contact:</strong> {{ hospital_contact }}</p>
+<p><strong>Status:</strong> CANCELLED ({{ reason }})</p>

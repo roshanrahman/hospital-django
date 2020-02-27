@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.fields import ArrayField
 from users.managers import UserProfileManager
 from safedelete.models import SafeDeleteModel
 from specializations.models import Specialization
@@ -36,7 +37,8 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     email_verified = models.BooleanField(default=False)
     email_verification_code = models.CharField(
         max_length=255, blank=True, null=True, default=None)
-    working_on_weekend = models.BooleanField(default=False)
+    weekday_availability = ArrayField(
+        models.IntegerField(blank=True, default=1), size=7, default=list((1, 1, 1, 1, 1, 1, 1)))
     working_on_holidays = models.BooleanField(default=False)
     other_holidays = models.TextField(null=True, blank=True)
     USERNAME_FIELD = 'email'
