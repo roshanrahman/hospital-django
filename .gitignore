@@ -131,3 +131,4 @@ dmypy.json
 users/__pycache__/*
 hospital_django/__pycache__/settings.cpython-36.pyc
 users/__pycache__/models.cpython-36.pyc
+secret.py
