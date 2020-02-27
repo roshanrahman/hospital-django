@@ -163,6 +163,9 @@ USE_TZ = True
 
 BASE_URL = 'http://djangoproject-hospital.herokuapp.com'
 
+if DEBUG:
+    BASE_URL = 'http://localhost:8000'
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 AUTH_USER_MODEL = 'users.UserProfile'
@@ -179,8 +182,8 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'app:social'
 SOCIAL_AUTH_USER_MODEL = 'users.UserProfile'
 
-OAUTH_CLIENT_ID = 'r6nWmE9Qil2SA8FZy7ZO8u9tQW9fetZy8ScRUjt3'
-OAUTH_CLIENT_SECRET = 'euglvOKs8MfhfpgW5QnM0nKFHYPTpSscuwcPiB6RwFcTA8IXVwWjKHSdnogrDmrmzNf5vceNsIm6uHikXIDKpczOC3ry2QMrDQ6ql401KPxs5dAMpSedNnLDvAvcUl2t'
+OAUTH_CLIENT_ID = 'tlKdTmQfM2gXtefaVdG91tcCkrrBeYXAkJj9Seiw'
+OAUTH_CLIENT_SECRET = 'JohQMKGJVJHu7OQGbiHE7XVkG9luZlZOMMTFReHbxBf7dj88WLYtaxRpbkm4aMJXbNS5gACCoIJksu0UJK73Tfgm51fux4XVqZxpTvi3gv36UWA5Y3C3ck4mnbEo3oxX'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())

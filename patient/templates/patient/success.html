@@ -99,12 +99,12 @@
   var selectedItemId = "new_appointment";
 
   function continueWithAppointment() {
-    location.replace('http://djangoproject-hospital.herokuapp.com/patient/make_appointment')
+    location.replace('/patient/make_appointment')
   }
 
   function cancelAppointment() {
     if(confirm('Are you sure you want to cancel booking the appointment?'))
-    location.replace('http://djangoproject-hospital.herokuapp.com/')
+    location.replace('/')
   }
 </script>
 {% endblock script %}
