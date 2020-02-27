@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'th7u8$ir=#t_k_^%wzn)x9-kncz#v_=*xb!fgmav7$+$)k#y9-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', True)
 
 ALLOWED_HOSTS = [
     '0.0.0.0', 'localhost', '127.0.0.1', '.herokuapp.com'
@@ -173,6 +173,8 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'roshan.g@codingmart.com'
 EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', None)
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '598521777587-qvcvgl5ubju2ve9le4rfnnppbc1e5ve3.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '2TQXxnAv2NqhuJumO0eZ1yEb'
 LOGIN_URL = 'social/auth/login/google-oauth2/'
@@ -181,9 +183,10 @@ LOGIN_REDIRECT_URL = '/users/on_external_oauth'
 LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'app:social'
 SOCIAL_AUTH_USER_MODEL = 'users.UserProfile'
-
-OAUTH_CLIENT_ID = 'tlKdTmQfM2gXtefaVdG91tcCkrrBeYXAkJj9Seiw'
-OAUTH_CLIENT_SECRET = 'JohQMKGJVJHu7OQGbiHE7XVkG9luZlZOMMTFReHbxBf7dj88WLYtaxRpbkm4aMJXbNS5gACCoIJksu0UJK73Tfgm51fux4XVqZxpTvi3gv36UWA5Y3C3ck4mnbEo3oxX'
+OAUTH_CLIENT_ID = os.environ.get(
+    'OAUTH_CLIENT_ID', 'tlKdTmQfM2gXtefaVdG91tcCkrrBeYXAkJj9Seiw')
+OAUTH_CLIENT_SECRET = os.environ.get(
+    'OAUTH_CLIENT_SECRET', 'JohQMKGJVJHu7OQGbiHE7XVkG9luZlZOMMTFReHbxBf7dj88WLYtaxRpbkm4aMJXbNS5gACCoIJksu0UJK73Tfgm51fux4XVqZxpTvi3gv36UWA5Y3C3ck4mnbEo3oxX')
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
