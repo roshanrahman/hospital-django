@@ -1,10 +1,12 @@
+from datetime import datetime, timedelta
+from appointment.models import Appointment
+from specializations.models import Specialization
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from helpers import redirect_to_correct_account, send_appointment_cancellation_email, send_appointment_confirmation_email, search_results, get_data, build_time_slots, get_slots, get_today_appointments, get_upcoming_appointments
-from specializations.models import Specialization
-from appointment.models import Appointment
-from datetime import datetime, timedelta
+from helpers.email import send_appointment_cancellation_email
+from helpers.common import redirect_to_correct_account
+from helpers.appointments import get_today_appointments, get_upcoming_appointments
 
 
 @login_required(login_url='/')
@@ -15,9 +17,9 @@ def doctor_appointments(request):
     appointments_list = []
     search_query = request.GET.get('search')
     sort = request.GET.get('sort')
-    if(sort == 'latest'):
+    if sort == 'latest':
         appointments = appointments.order_by('-time_slot')
-    elif(sort == 'oldest'):
+    elif sort == 'oldest':
         appointments = appointments.order_by('time_slot')
     for appointment in appointments:
         slot_end = appointment.time_slot + \
@@ -28,7 +30,7 @@ def doctor_appointments(request):
         {appointment.doctor.first_name}
         {appointment.doctor.last_name}
         {appointment.appointment_status}'''
-        if(search_query and search_query.lower() not in searchable_string.lower()):
+        if search_query and search_query.lower() not in searchable_string.lower():
             continue
         appointments_list.append({
             'id': appointment.id,
@@ -44,9 +46,9 @@ def doctor_appointments(request):
     context = {
         'appointments': appointments_list
     }
-    if(search_query):
+    if search_query:
         context['search'] = search_query
-    if(sort):
+    if sort:
         context['sort'] = sort
     return render(request, 'doctor/appointments.html', context)
 
@@ -55,21 +57,18 @@ def doctor_appointments(request):
 def doctor_profile(request):
     if redirect_to_correct_account(request, 'doctor'):
         return redirect('app:index')
-    if(request.method == 'POST'):
+    if request.method == 'POST':
         print(request.POST)
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         mobile = request.POST.get('mobile')
         working_on_weekend = request.POST.get('working_on_weekend')
-        if(working_on_weekend == 'on'):
-            working_on_weekend = True
+        if working_on_weekend == 'on':
+            pass
         else:
-            working_on_weekend = False
+            pass
         working_on_holidays = request.POST.get('working_on_holidays')
-        if working_on_holidays == 'on':
-            working_on_holidays = True
-        else:
-            working_on_holidays = False
+        working_on_holidays = working_on_holidays == 'on'
         user = request.user
         user.first_name = first_name
         user.last_name = last_name
@@ -121,7 +120,7 @@ def appointment_details(request, appointment_id=None):
             appointment.appointment_status = status
             appointment.notes = reason
             appointment.save()
-            if(status == 'cancelled'):
+            if (status == 'cancelled'):
                 send_appointment_cancellation_email(
                     appointment.time_slot.strftime('%Y-%m-%d %H:%M'),
                     reason,

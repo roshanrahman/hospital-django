@@ -1,17 +1,13 @@
 from django.shortcuts import render, redirect
-from django.urls import path, include, reverse
-from django.http import HttpResponse
+from django.urls import reverse
 from django.db import IntegrityError
 from django.core.mail import send_mail
 from django.contrib.auth import login as auth_login, logout as auth_logout
-from oauth2_provider.views.generic import ProtectedResourceView
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from users.forms import RegisterUserForm
 from users.models import UserProfile
 from specializations.models import Specialization
 from oauth2_provider.models import AccessToken
-from django.contrib import messages
 from hospital_django.settings import OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET
 from hospital_django.settings import EMAIL_HOST_USER, BASE_URL
 import secrets
@@ -56,6 +52,7 @@ def register(request):
         auth_login(request, user,
                    backend='oauth2_provider.backends.OAuth2Backend')
         return render(request, 'users/success.html')
+    return redirect('app:index')
 
 
 def fill_missing(request):
@@ -93,6 +90,7 @@ def fill_missing(request):
         auth_login(request, user,
                    backend='oauth2_provider.backends.OAuth2Backend')
         return redirect('app:index')
+    return redirect('app:index')
 
 
 def on_external_oauth(request):
@@ -128,13 +126,14 @@ def login(request):
             index_url = reverse('app:index')
             response = redirect(index_url)
             return response
-        else:
-            print(r.json())
-            messages.error(request, 'Invalid Credentials')
-            return redirect('users:login')
+
+        print(r.json())
+        messages.error(request, 'Invalid Credentials')
+        return redirect('users:login')
 
     if request.method == 'GET':
         return render(request, 'users/login.html')
+    return redirect('app:index')
 
 
 def logout(request):
@@ -207,8 +206,7 @@ def verify_email(request):
             messages.success(
                 request, 'Your email has been verified. You can now login.')
             return redirect('users:login')
-        else:
-            messages.error(request, "The verification link has expired")
+        messages.error(request, "The verification link has expired")
     except Exception:
         messages.error(request, 'The verification link is invalid')
     return redirect('users:approval_pending')
