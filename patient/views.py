@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
-from hospital_django.settings import EMAIL_HOST_USER
 from hospital.models import Hospital
 from appointment.models import Appointment
 from specializations.models import Specialization
 from users.models import UserProfile
-from helpers import redirect_to_correct_account, send_appointment_cancellation_email, send_appointment_confirmation_email, search_results, get_data, build_time_slots, get_slots, get_today_appointments, get_upcoming_appointments
+from helpers.email import send_appointment_cancellation_email, send_appointment_confirmation_email
+from helpers.common import redirect_to_correct_account
+from helpers.search import search_results, get_data
+from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments
 from datetime import datetime, timedelta
 
 
@@ -20,11 +21,7 @@ def delete_appointment_session(request):
 
 
 def redirect_if_no_session(request):
-    try:
-        a = request.session['booking']
-        return False
-    except Exception:
-        return redirect('app:patient:index')
+    return False if request.session.get('booking', None) is not None else redirect('app:patient:index')
 
 
 @login_required(login_url='/users/login')
@@ -215,7 +212,7 @@ def make_appointment(request):
     hospital_id = request.session['booking']['hospital_id']
     specialization_id = request.session['booking']['specialization_id']
     date = request.session['booking']['date']
-    appointment = Appointment.objects.create(
+    Appointment.objects.create(
         with_specialization=Specialization.objects.get(
             pk=int(specialization_id)),
         doctor=UserProfile.objects.get(pk=int(doctor_id)),
