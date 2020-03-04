@@ -9,8 +9,9 @@ from users.models import UserProfile
 from helpers.email import send_appointment_cancellation_email, send_appointment_confirmation_email
 from helpers.common import redirect_to_correct_account
 from helpers.search import search_results, get_data
-from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments
+from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments, is_ongoing
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 def delete_appointment_session(request):
@@ -100,10 +101,19 @@ def payment(request):
 def patient_appointments(request):
     if redirect_to_correct_account(request, 'patient'):
         return redirect('app:index')
-    appointments = Appointment.objects.filter(patient_id=request.user.id)
+    status = request.GET.get('status', 'all')
+    if status not in ('pending', 'cancelled', 'completed'):
+        status = 'all'
+    appointments = []
+    if status == 'all':
+        appointments = Appointment.objects.filter(patient_id=request.user.id)
+    else:
+        appointments = Appointment.objects.filter(
+            patient_id=request.user.id, appointment_status=status)
     appointments_list = []
     search_query = request.GET.get('search')
     sort = request.GET.get('sort')
+    appointments = appointments.order_by('-time_slot')
     if(sort == 'latest'):
         appointments = appointments.order_by('-time_slot')
     elif(sort == 'oldest'):
@@ -118,10 +128,15 @@ def patient_appointments(request):
         {appointment.doctor.last_name}
         {appointment.appointment_status}
         '''
+        ongoing = False
         if(search_query and search_query.lower() not in searchable_string.lower()):
             continue
+        if appointment.appointment_status == 'pending':
+            ongoing = is_ongoing(appointment.time_slot,
+                                 appointment.at_hospital.session_duration)
         appointments_list.append({
             'id': appointment.id,
+            'ongoing':  ongoing,
             'appointment_status': appointment.appointment_status,
             'with_specialization': appointment.with_specialization,
             'doctor': appointment.doctor,
@@ -138,6 +153,7 @@ def patient_appointments(request):
         context['search'] = search_query
     if(sort):
         context['sort'] = sort
+    context['status'] = status
     return render(request, 'patient/appointments.html', context)
 
 
@@ -284,6 +300,8 @@ def appointment_details(request, appointment_id=None):
         if appointment.appointment_status == 'pending':
             context['allow_actions'] = True
         context['appointment'] = appointment
+        context['ongoing'] = is_ongoing(appointment.time_slot,
+                                        appointment.at_hospital.session_duration)
 
     except Exception as e:
         print(e)
