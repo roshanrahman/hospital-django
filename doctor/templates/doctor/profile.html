@@ -37,6 +37,17 @@
           </div>
         </div>
         <div class="field">
+          <span>A short description of yourself</span>
+          <textarea
+            type="text"
+            rows="5"
+            name="bio"
+            value="{{ user.bio }}"
+            placeholder="Write a short paragraph describing yourself, your work and expertise"
+            required
+            disabled >{{ user.bio }}</textarea>
+        </div>
+        <div class="field">
           <span>Mobile Number</span>
           <input
             pattern="[0-9]{10}"
@@ -57,6 +68,42 @@
             maxlength="10"
             value="{{ user.email }}"
             placeholder="Mobile Number"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Specialization</span>
+          <input
+            type="text"
+            name="specialization"
+            maxlength="10"
+            value="{{ user.specialization.name }}"
+            placeholder="Specialization"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Indian Medical Registry Number</span>
+          <input
+            type="text"
+            name="registration"
+            maxlength="10"
+            value="{{ user.registration_number }}"
+            placeholder="Registration Number"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Qualification</span>
+          <input
+            type="text"
+            name="qualification"
+            maxlength="10"
+            value="{{ user.qualification }}"
+            placeholder="Qualification"
             required
             disabled
           />
@@ -276,9 +323,15 @@
   });
 
   function enableForm(status) {
-    const formElements = document.querySelectorAll("input, select");
+    const formElements = document.querySelectorAll("input, select, textarea");
+    const exclusions = [
+'email',
+'qualification',
+'registration',
+'specialization'
+    ]
     formElements.forEach(element => {
-      if (element.name == "email") return;
+      if (exclusions.indexOf(element.name) > -1) return;
       if (status) {
         element.disabled = false;
       } else {
