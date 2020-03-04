@@ -68,7 +68,8 @@ form {
   flex-direction: column;
 }
 
-.field > input {
+.field > input,
+textarea {
   font-size: 18px;
   padding: 8px;
   margin-top: 8px;
@@ -635,12 +636,14 @@ span.type {
 }
 
 .modal-container {
-  position: absolute;
+  position: fixed;
+  overflow-y: hidden;
   z-index: 10000;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.363);
   display: flex;
   justify-content: center;
@@ -695,4 +698,24 @@ span.type {
   font-size: 1.5em;
   text-transform: uppercase;
   color: white;
+}
+
+#reason-text-field {
+  padding: 16px;
+  font-size: 1.2em;
+}
+
+.hidden {
+  display: none;
+}
+
+.doctors-note {
+  background-color: rgba(241, 248, 243, 0.685);
+  border: 2px solid rgba(0, 128, 0, 0.178);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.doctor-only {
+  display: none;
 }
