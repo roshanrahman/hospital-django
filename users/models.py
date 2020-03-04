@@ -27,7 +27,7 @@ class UserProfile(AbstractUser, SafeDeleteModel):
     first_name = models.CharField('First Name', max_length=50)
     last_name = models.CharField(
         'Last Name', max_length=50, null=True, default='')
-    mobile = models.CharField('Mobile Number', max_length=15)
+    mobile = models.CharField('Mobile Number', max_length=15, unique=True)
     user_type = models.CharField(
         'User type', max_length=30,  choices=USER_TYPE_CHOICES)
     account_status = models.CharField(
@@ -41,6 +41,13 @@ class UserProfile(AbstractUser, SafeDeleteModel):
         models.IntegerField(blank=True, default=1), size=7, default=list((1, 1, 1, 1, 1, 1, 1)))
     working_on_holidays = models.BooleanField(default=False)
     other_holidays = models.TextField(null=True, blank=True)
+    qualification = models.CharField(null=True, blank=True, max_length=100)
+    registration_number = models.CharField(
+        unique=True,
+        null=True, blank=True, max_length=20)
+    bio = models.TextField(
+        null=True, blank=True
+    )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserProfileManager()
