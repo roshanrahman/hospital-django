@@ -35,7 +35,7 @@
     </div>
     <main></main>
     {% for message in messages %}
-    <div class="alert">
+    <div class="alert alert-{{ message.tags }}">
       <span> {{ message }}</span>
     </div>
     {% endfor %} {% block body %} {% endblock body %}
@@ -51,7 +51,7 @@
       </div>
       <div class="side-nav-item clickable" id="doctor_appointments">
         <i class="material-icons">assignment_turned_in</i>
-        <span>View Appointments</span>
+        <span>My Appointments</span>
       </div>
       <div class="side-nav-item clickable" id="doctor_profile">
         <i class="material-icons">account_circle</i>

@@ -1,8 +1,8 @@
 from users.models import UserProfile
 from hospital.models import Hospital
 from appointment.models import Appointment
-
 import datetime
+from django.utils import timezone
 
 
 def build_time_slots(start, end, duration):
@@ -39,6 +39,33 @@ def is_time_between(begin_time, end_time, check_time=None):
     if begin_time < end_time:
         return check_time >= begin_time and check_time <= end_time
     return check_time >= begin_time or check_time <= end_time
+
+
+def is_time_after(end_time=None, check_time=None):
+    return end_time > check_time
+
+
+def is_ongoing(appointment_date, duration):
+    now_date = timezone.now() + datetime.timedelta(hours=5, minutes=30)
+    end_date = appointment_date + datetime.timedelta(minutes=duration)
+    is_between = is_time_between(
+        appointment_date.time(), end_date.time(), now_date.time()
+    )
+    is_after = end_date.time() < now_date.time()
+    print('Returned by is_ongoing', is_between, is_after)
+    if is_between:
+        return {
+            'is_ongoing': True,
+            'status': 'in-progress',
+            'long': 'Appointment is in progress'
+        }
+    if is_after:
+        return {
+            'is_ongoing': False,
+            'status': 'time-elapsed',
+            'long': 'The time for the appointment has elapsed, status not updated'
+        }
+    return False
 
 
 def get_slots(hospital_id, doctor_id, date):
@@ -108,8 +135,12 @@ def get_today_appointments(request, doctor=None):
     print(today_appointments)
     today_appointments_list = []
     for appointment in today_appointments:
+        ongoing = is_ongoing(appointment.time_slot,
+                             appointment.at_hospital.session_duration)
+        print(ongoing)
         today_appointments_list.append({
             'id': appointment.id,
+            'ongoing': ongoing,
             'specialization_name': appointment.with_specialization.name,
             'appointment_status': appointment.appointment_status,
             'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',
@@ -143,8 +174,13 @@ def get_upcoming_appointments(request, doctor=None):
         )
     upcoming_appointments_list = []
     for appointment in upcoming_appointments:
+        ongoing = False
+        if appointment.appointment_status == 'pending':
+            if timezone.now() > appointment.time_slot:
+                ongoing = True
         upcoming_appointments_list.append({
             'id': appointment.id,
+            'ongoing': ongoing,
             'specialization_name': appointment.with_specialization.name,
             'appointment_status': appointment.appointment_status,
             'patient_name': f'{appointment.patient.first_name} {appointment.patient.last_name}',

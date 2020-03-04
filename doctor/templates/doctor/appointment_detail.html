@@ -6,9 +6,9 @@
     <div class="spacer"></div>
 
     {% if appointment.appointment_status == 'pending' %}
-    <span class="status-chip" style="background-color: rgb(156, 116, 4);"
-      >Scheduled</span
-    >
+    <span class="status-chip" style="background-color: rgb(156, 116, 4);">
+      {% if ongoing %} {{ ongoing.status }} {% else %} Scheduled {% endif %}
+    </span>
     {% endif %} {% if appointment.appointment_status == 'completed' %}
     <span class="status-chip" style="background-color: rgb(4, 156, 80);"
       >Completed</span
@@ -71,7 +71,8 @@
     <!-- prettier-ignore -->
     <h3>
       {% if appointment.appointment_status == 'pending' %} 
-      <span class="warning">Appointment is scheduled</span>
+      <span class="warning">{% if ongoing %} {{ ongoing.long }} {% else %}
+        Appointment is scheduled {% endif %}</span>
       {% endif %} 
       {% if appointment.appointment_status == 'completed' %} 
       <span class="success">Appointment was completed</span> 
@@ -81,6 +82,19 @@
       {% endif %}
     </h3>
   </div>
+
+  {% if appointment.appointment_status == 'completed' %}
+  <div class="vertical-spacer"></div>
+  <div class="doctors-note">
+    <div class="hospital-card-details-item">
+      <label>Doctor's Note</label>
+      <h3>
+        {{ appointment.notes }}
+      </h3>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="vertical-spacer"></div>
   <hr />
   <div class="vertical-spacer"></div>
@@ -118,18 +132,14 @@
 
     {% if today %}
     <div class="field">
-      <form action="{{ request.path }}" method="post">
-        {% csrf_token %}
-        <input
-          type="text"
-          name="status"
-          value="completed"
-          style="display: none;"
-        />
-        <button type="submit" class="btn primary" style="margin-top: 8px;">
-          Mark Appointment Complete
-        </button>
-      </form>
+      <button
+        onclick="toggleCompleteDialog(true);"
+        class="btn primary"
+        style="margin-top: 8px;"
+      >
+        Mark Appointment Complete
+      </button>
+      <button disabled="disabled" hidden type="submit"></button>
     </div>
     {% endif %}
   </div>
@@ -171,11 +181,48 @@
     </form>
   </div>
   <div class="vertical-spacer"></div>
+  <div class="modal-container hidden" id="notes-modal">
+    <div class="modal-content">
+      <form action="{{ request.path }}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="completed" />
+
+        <div class="modal-header">
+          Provide appointment notes
+        </div>
+        <div class="modal-subtitle">
+          Please provide your notes about the appointment
+        </div>
+
+        <div class="field">
+          <span>
+            <span>Quick Complete: </span>
+            <a>Re-visit suggested</a>
+            <a>Further consultation not necessary</a>
+            <a>Re-visit suggested</a>
+          </span>
+          <div class="vertical-spacer"></div>
+          <textarea
+            name="reason"
+            id="reason-text-field"
+            rows="6"
+            required
+            placeholder="Type here"
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="toggleCompleteDialog(false);">
+            Go Back
+          </button>
+          <button class="btn primary" type="submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </main>
 {% endblock body %} {% block script %}
 
 <script>
-  var selectedItemId = "doctor_appointments";
   const actionSection = document.querySelector("#actions-section");
   const cancelSection = document.querySelector("#cancel-section");
   function showCancel() {
@@ -185,6 +232,15 @@
   function hideCancel() {
     actionSection.style.display = "flex";
     cancelSection.style.display = "none";
+  }
+
+  function toggleCompleteDialog(visible) {
+    const notesModal = document.getElementById("notes-modal");
+    if (visible) {
+      notesModal.classList.remove("hidden");
+    } else {
+      notesModal.classList.add("hidden");
+    }
   }
   function cancelAppointment() {
     const cancelForm = document.querySelector("#cancel-form");

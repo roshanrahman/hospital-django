@@ -7,12 +7,10 @@
 
     {% if appointment.appointment_status == 'pending' %}
     <span class="status-chip" style="background-color: rgb(156, 116, 4);"
-      >Scheduled</span
-    >
+      >{% if ongoing %} {{ ongoing.status }} {% else %} Scheduled {% endif %}</span>
     {% endif %} {% if appointment.appointment_status == 'completed' %}
     <span class="status-chip" style="background-color: rgb(4, 156, 80);"
-      >Completed</span
-    >
+      >Completed</span>
     {% endif %} {% if appointment.appointment_status == 'cancelled' %}
     <span class="status-chip" style="background-color: rgb(156, 4, 4);"
       >Cancelled</span
@@ -71,7 +69,8 @@
     <!-- prettier-ignore -->
     <h3>
       {% if appointment.appointment_status == 'pending' %} 
-      <span class="warning">Appointment is scheduled</span>
+      <span class="warning">{% if ongoing %} {{ ongoing.long }} {% else %}
+        Appointment is scheduled {% endif %}</span>
       {% endif %} 
       {% if appointment.appointment_status == 'completed' %} 
       <span class="success">Appointment was completed</span> 
@@ -81,6 +80,18 @@
       {% endif %}
     </h3>
   </div>
+
+  {% if appointment.appointment_status == 'completed' %}
+  <div class="vertical-spacer"></div>
+  <div class="doctors-note">
+    <div class="hospital-card-details-item">
+      <label>Doctor's Note</label>
+      <h3>
+        {{ appointment.notes }}
+      </h3>
+    </div>
+  </div>
+  {% endif %}
   <div class="vertical-spacer"></div>
   <hr />
   <div class="vertical-spacer"></div>
