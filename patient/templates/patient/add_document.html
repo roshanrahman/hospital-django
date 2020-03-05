@@ -1,0 +1,173 @@
+{% extends 'patient/base.html' %}
+<!---->{% block body %}
+<main>
+  <div id="selectSection">
+    <div class="columns" style="align-items: center;">
+      <h2 class="type">New document</h2>
+      <div class="spacer"></div>
+    </div>
+
+    <hr />
+    <div class="vertical-spacer"></div>
+    <div class="field">
+      <span
+        >Provide a title for the document (e.g. Blood Test Report, etc)</span
+      >
+      <input
+        type="text"
+        name="title"
+        placeholder="Document Title"
+        required
+        onchange="onTitleChanged(event);"
+      />
+    </div>
+    <div class="field">
+      <span>Choose the file from your computer</span>
+      <input
+        type="file"
+        name="file"
+        id="file"
+        required
+        onchange="onFileChanged(event);"
+      />
+    </div>
+
+    <div class="vertical-spacer"></div>
+    <div class="row" id="profile-changes-option">
+      <a href="{% url 'app:patient:documents'%}">
+        <button class="btn outlined" type="button">
+          Cancel
+        </button>
+      </a>
+      <div class="spacer"></div>
+      <button
+        disabled
+        class="btn primary flex-end"
+        id="uploadButton"
+        onclick="uploadToFirebase()"
+      >
+        Upload
+      </button>
+    </div>
+  </div>
+  <div id="uploadSection">
+    <form
+      id="addDocumentForm"
+      action="{% url 'app:patient:add_document' %}"
+      method="post"
+    >
+      {% csrf_token %}
+      <input type="hidden" name="title" id="titleInput" />
+      <input type="hidden" name="url" id="urlInput" />
+    </form>
+    <div class="columns" style="align-items: center;">
+      <h2 class="type">Uploading</h2>
+      <div class="spacer"></div>
+      <div class="column">
+        <div class="progress-bar">
+          <div class="progress-bar fill" id="upload-progress"></div>
+        </div>
+      </div>
+    </div>
+
+    <hr />
+    <div class="vertical-spacer"></div>
+    <h3 class="type">Your document is being uploaded</h3>
+  </div>
+</main>
+{% endblock body %} {% block script %}
+
+<script>
+  function generateFileName(file) {
+    extension = file.split(".").pop();
+    return `${Math.random() * 100}${Math.random() * 100}.${extension}`;
+  }
+
+  var isTitleFilled = false;
+  var fileTitle = null;
+  var isFileUploaded = false;
+
+  const selectSection = document.getElementById("selectSection");
+  const uploadSection = document.getElementById("uploadSection");
+  uploadSection.style.display = "none";
+
+  var selectedItemId = "patient_documents";
+  var storage = firebase.storage();
+  var storageRef = storage.ref();
+  storageRef = storageRef.child("documents");
+
+  function setProgress(percent) {
+    const progressElement = document.getElementById("upload-progress");
+    progressElement.style.width = `${percent}%`;
+  }
+
+  function onTitleChanged(event) {
+    fileTitle = event.target.value;
+    if (event.target.value) {
+      isTitleFilled = true;
+    }
+    if (isTitleFilled & isFileUploaded) {
+      const uploadButton = document.querySelector("#uploadButton");
+      uploadButton.removeAttribute("disabled");
+    }
+  }
+
+  function onFileChanged(event) {
+    if (event.target.files.length > 0) {
+      isFileUploaded = true;
+    }
+    if (isTitleFilled & isFileUploaded) {
+      const uploadButton = document.querySelector("#uploadButton");
+      uploadButton.removeAttribute("disabled");
+    }
+  }
+
+  function addDocument(url) {
+    const formElement = document.getElementById("addDocumentForm");
+    const titleInput = document.getElementById("titleInput");
+    const urlInput = document.getElementById("urlInput");
+    urlInput.value = url;
+    titleInput.value = fileTitle;
+    formElement.submit();
+  }
+
+  function uploadToFirebase() {
+    const fileElement = document.getElementById("file");
+    selectSection.style.display = "none";
+    uploadSection.style.display = "block";
+    file = fileElement.files[0];
+    console.log(file.name);
+    storageRef = storageRef.child(file.name);
+    var uploadTask = storageRef.put(file);
+    uploadTask.on(
+      "state_changed",
+      function(snapshot) {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setProgress(progress);
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log("Upload is paused");
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log("Upload is running");
+            break;
+        }
+      },
+      function(error) {
+        // Handle unsuccessful uploads
+      },
+      function() {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+          console.log("File available at", downloadURL);
+          addDocument(downloadURL);
+        });
+      }
+    );
+  }
+</script>
+{% endblock script %}

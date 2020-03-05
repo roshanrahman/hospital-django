@@ -1,0 +1,107 @@
+{% extends 'patient/base.html' %}
+<!---->{% block body %}
+<main>
+  <div id="selectSection">
+    <div class="columns" style="align-items: center;">
+      <h2 class="type">{{ document.title }}</h2>
+      <div class="spacer"></div>
+      <a href="{{ document.url }}" target="_blank">
+        <button class="btn primary">
+            View Document
+            </button>
+      </a>
+    </div>
+
+    <hr />
+    <div class="vertical-spacer"></div>
+    <div class="columns" style="align-items: center;">
+        <h3 class="type">Shared with</h3>
+        <div class="spacer"></div>
+        
+          <button id="addDoctorButton" class="btn" onclick="enableForm(true)">
+              Add Doctor
+              </button>
+        
+      </div>
+    <form id="addDoctorForm" action="{% url 'app:patient:share_document' %}" method="POST">
+<input type="hidden" name="document_id" value="{{ document.id }}">
+{% csrf_token %}
+        <div class="card">
+            <div class="field">
+                <datalist id="emailSuggestions"></datalist>
+                <span>Enter the email address of the doctor you want to share this document with</span>
+                <input required oninput="onEmailInputChanged(event);" autocomplete="off" list="emailSuggestions" type="text" name="email" placeholder="Doctor's email"/>
+            </div>
+
+            <div class="field">
+                <span>Provide a password to allow access to this file. Share this password with the doctor.</span>
+                <input required type="password" name="password" placeholder="Access Password"/>
+            </div>
+
+            <div class="row">
+                <button class="btn" onclick="enableForm(false)">
+                    Cancel
+                    </button>
+                <div class="spacer"></div>
+
+                <button class="btn primary" type="submit">Share</button>
+            </div>
+            <div class="vertical-spacer"></div>
+        </div>
+<option value=""></option>
+    </form>
+    
+    {% for document in shared_documents %}
+    <div class="card outlined">
+        <div class="row">
+            <h3>Dr. {{ document.doctor.first_name }} {{document.doctor.last_name }}</h3>
+            <div class="pseudomargin"></div>
+            ({{ document.doctor.email }})
+            <div class="spacer"></div>
+            <button class="icon-btn">
+                <i class="material-icons">delete</i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+        
+</main>
+{% endblock body %} {% block script %}
+
+<script>
+
+const emailSuggestions = document.getElementById('emailSuggestions'); 
+const addDoctorForm = document.getElementById('addDoctorForm');
+const addDoctorButton = document.getElementById('addDoctorButton');
+addDoctorForm.style.display = 'none';
+async function buildEmailSuggestions(query) {
+    let response = await fetch(`{% url "app:patient:get_doctor_emails" %}?query=${query}`);
+    response = await response.json()
+    console.log(response);
+    if(response) {
+        var emails = response.emails;
+        emailSuggestions.innerHTML = '';
+        emails.forEach(email => {
+            emailSuggestions.innerHTML += `<option value="${email}">${email}</option>`;
+        });
+    }
+}
+
+function onEmailInputChanged(event) {
+    if(event.target.value.length > 1) {
+        buildEmailSuggestions(event.target.value);
+    }
+}
+
+function enableForm(shouldShow) {
+    if(shouldShow) {
+        addDoctorForm.style.display = 'block';
+        addDoctorButton.style.display = 'none';
+    } else {
+        addDoctorForm.style.display = 'none';
+        addDoctorButton.style.display = 'block';
+    }
+}
+
+</script>
+{% endblock script %}

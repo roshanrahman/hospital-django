@@ -14,6 +14,7 @@ APPOINTMENT_STATUS_CHOICES = [
 
 # Create your models here.
 class Appointment(BaseModel):
+    display_id = models.CharField(max_length=20)
     appointment_status = models.CharField(default='pending',
                                           choices=APPOINTMENT_STATUS_CHOICES, max_length=20)
     with_specialization = models.ForeignKey(

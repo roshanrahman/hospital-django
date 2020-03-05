@@ -1,8 +1,18 @@
 from django.db import models
 from app.models import BaseModel
 from users.models import UserProfile
+from patient.models import Document
 from appointment.models import Appointment
 # Create your models here.
+
+
+class SharedDocument(BaseModel):
+    doctor = models.ForeignKey(to=UserProfile, limit_choices_to={
+        'user_type': 'doctor'
+    }, on_delete=models.CASCADE)
+    shared_document = models.ForeignKey(
+        to=Document, on_delete=models.CASCADE, related_name='shareddoc')
+    password = models.CharField(max_length=30)
 
 
 class Feedback(models.Model):

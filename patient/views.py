@@ -4,12 +4,14 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from hospital.models import Hospital
 from appointment.models import Appointment
+from doctor.models import SharedDocument
 from specializations.models import Specialization
 from users.models import UserProfile
 from helpers.email import send_appointment_cancellation_email, send_appointment_confirmation_email
 from helpers.common import redirect_to_correct_account
 from helpers.search import search_results, get_data
 from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments, is_ongoing
+from patient.models import Document
 from datetime import datetime, timedelta
 from django.utils import timezone
 
@@ -307,3 +309,76 @@ def appointment_details(request, appointment_id=None):
         print(e)
         return redirect('app:patient:patient_appointments')
     return render(request, 'patient/appointment_detail.html', context)
+
+
+def patient_documents(request):
+    documents = Document.objects.filter(patient=request.user)
+    context = dict()
+    context['documents'] = documents
+    return render(request, 'patient/documents.html', context)
+
+
+def patient_document_details(request, document_id):
+    document = Document.objects.get(pk=document_id)
+    context = dict()
+    context['document'] = document
+    shared_documents = SharedDocument.objects.filter(
+        shared_document=document)
+    context['shared_documents'] = shared_documents
+    return render(request, 'patient/document_detail.html', context)
+
+
+def patient_documents_add(request):
+    if request.method == "POST":
+        title = request.POST.get('title', None)
+        url = request.POST.get('url', None)
+        if(not title or not url):
+            messages.error(request, 'Missing parameters to add document')
+            return redirect('app:patient:add_document')
+        document = Document(
+            title=title,
+            url=url,
+            patient=request.user
+        )
+        document.save()
+        messages.success(request, 'Document added successfully')
+        return redirect('app:patient:document_details', document_id=document.id)
+    return render(request, 'patient/add_document.html')
+
+
+def get_doctor_emails(request):
+    query = request.GET.get('query', None)
+    if not query:
+        return JsonResponse({
+            'emails': []
+        })
+    email_list = list()
+    doctors = UserProfile.objects.filter(email__icontains=query) | UserProfile.objects.filter(
+        first_name__icontains=query) | UserProfile.objects.filter(last_name__icontains=query)
+    for doctor in doctors:
+        email_list.append(doctor.email)
+    return JsonResponse(
+        {'emails': sorted(email_list)}
+    )
+
+
+def share_documents(request):
+    email = request.POST.get('email', None)
+    password = request.POST.get('password', None)
+    document_id = request.POST.get('document_id', None)
+    print(email)
+    try:
+        doctor = UserProfile.objects.get(email=email)
+        shared_document = SharedDocument(
+            doctor=doctor,
+            shared_document_id=document_id,
+            password=password
+        )
+        shared_document.save()
+    except Exception as e:
+        print(e)
+        messages.error(
+            request, 'Could not find a doctor with the email address you provided')
+        return redirect('app:patient:document_details', document_id=document_id)
+    messages.success(request, f'Document shared with Dr. {doctor.first_name}')
+    return redirect('app:patient:document_details', document_id=document_id)

@@ -115,7 +115,7 @@ WSGI_APPLICATION = 'hospital_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'hospitaldjango',
+        'NAME': 'hospitaldjango2',
         'USER': 'dbuser',
         'PASSWORD': 'root',
         'HOST': 'localhost',
@@ -180,5 +180,5 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIAL_AUTH_URL_NAMESPACE = 'app:social'
 SOCIAL_AUTH_USER_MODEL = 'users.UserProfile'
 
-OAUTH_CLIENT_ID = 'tlKdTmQfM2gXtefaVdG91tcCkrrBeYXAkJj9Seiw'
-OAUTH_CLIENT_SECRET = 'JohQMKGJVJHu7OQGbiHE7XVkG9luZlZOMMTFReHbxBf7dj88WLYtaxRpbkm4aMJXbNS5gACCoIJksu0UJK73Tfgm51fux4XVqZxpTvi3gv36UWA5Y3C3ck4mnbEo3oxX'
+OAUTH_CLIENT_ID = 'prJ4UZsV2rqnXREQMtHcQJNq2I5krZeDuRO5FYAm'
+OAUTH_CLIENT_SECRET = 'drsXWmHzYaZ610fWHGpH9G2uf7g0PnR5f5sir8e5uUko0sUYXL8sAz6bkeH4Rpm2ZfMzVAS5xZo18s5oTF5uRuu1mMWmasKf4qFdqXeUgArS49AKvliJg6fcOjGMvQn5'
