@@ -1,64 +1,73 @@
 {% extends 'patient/base.html' %}
 <!---->{% block body %}
 <main>
-  <div id="selectSection">
-    <div class="columns" style="align-items: center;">
-      <h2 class="type">New document</h2>
-      <div class="spacer"></div>
-    </div>
+  <form
+    enctype="multipart/form-data"
+    id="addDocumentForm"
+    action="{% url 'app:patient:add_document' %}"
+    method="post"
+  >
+    {% csrf_token %}
+    <div id="selectSection">
+      <div class="columns" style="align-items: center;">
+        <h2 class="type">New document</h2>
+        <div class="spacer"></div>
+      </div>
 
-    <hr />
-    <div class="vertical-spacer"></div>
-    <div class="field">
-      <span
-        >Provide a title for the document (e.g. Blood Test Report, etc)</span
-      >
-      <input
-        type="text"
-        name="title"
-        placeholder="Document Title"
-        required
-        onchange="onTitleChanged(event);"
-      />
-    </div>
-    <div class="field">
-      <span>Choose the file from your computer</span>
-      <input
-        type="file"
-        name="file"
-        id="file"
-        required
-        onchange="onFileChanged(event);"
-      />
-    </div>
+      <hr />
+      <div class="vertical-spacer"></div>
+      <div class="field">
+        <span
+          >Provide a title for the document (e.g. Blood Test Report, etc)</span
+        >
+        <input
+          type="text"
+          name="title"
+          placeholder="Document Title"
+          required
+          onchange="onTitleChanged(event);"
+        />
+      </div>
+      <div class="field">
+        <span>Choose the file from your computer</span>
+        <input
+          type="file"
+          name="file"
+          id="file"
+          required
+          onchange="onFileChanged(event);"
+        />
+      </div>
 
-    <div class="vertical-spacer"></div>
-    <div class="row" id="profile-changes-option">
-      <a href="{% url 'app:patient:documents'%}">
-        <button class="btn outlined" type="button">
-          Cancel
+      <div class="vertical-spacer"></div>
+      <div class="row" id="profile-changes-option">
+        <a href="{% url 'app:patient:documents'%}">
+          <button class="btn outlined" type="button">
+            Cancel
+          </button>
+        </a>
+        <div class="spacer"></div>
+        <button
+          disabled
+          class="btn primary flex-end"
+          id="uploadButton"
+          type="submit"
+        >
+          Upload
         </button>
-      </a>
-      <div class="spacer"></div>
-      <button
-        disabled
-        class="btn primary flex-end"
-        id="uploadButton"
-        onclick="uploadToFirebase()"
-      >
-        Upload
-      </button>
+      </div>
     </div>
-  </div>
+  </form>
   <div id="uploadSection">
     <form
+      enctype="multipart/form-data"
       id="addDocumentForm"
       action="{% url 'app:patient:add_document' %}"
       method="post"
     >
       {% csrf_token %}
       <input type="hidden" name="title" id="titleInput" />
-      <input type="hidden" name="url" id="urlInput" />
+      <input type="hidden" name="file" id="fileInput" />
     </form>
     <div class="columns" style="align-items: center;">
       <h2 class="type">Uploading</h2>
@@ -69,12 +78,29 @@
         </div>
       </div>
     </div>
-
     <hr />
     <div class="vertical-spacer"></div>
     <h3 class="type">Your document is being uploaded</h3>
   </div>
 </main>
+<!-- 
+<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-storage.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAmMghRhi331dVXSEGnTm0hI7nM-slh-rQ",
+    authDomain: "hospital-django.firebaseapp.com",
+    databaseURL: "https://hospital-django.firebaseio.com",
+    projectId: "hospital-django",
+    storageBucket: "hospital-django.appspot.com",
+    messagingSenderId: "598521777587",
+    appId: "1:598521777587:web:60c17209143001de350fc6"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script> -->
 {% endblock body %} {% block script %}
 
 <script>

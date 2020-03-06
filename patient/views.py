@@ -14,6 +14,7 @@ from helpers.appointments import get_slots, get_today_appointments, get_upcoming
 from patient.models import Document
 from datetime import datetime, timedelta
 from django.utils import timezone
+from helpers.firebase import upload_file_to_firebase
 
 
 def delete_appointment_session(request):
@@ -331,8 +332,9 @@ def patient_document_details(request, document_id):
 def patient_documents_add(request):
     if request.method == "POST":
         title = request.POST.get('title', None)
-        url = request.POST.get('url', None)
-        if(not title or not url):
+        file = request.FILES
+        upload_file_to_firebase(file.get('file'))
+        if(not title or not file):
             messages.error(request, 'Missing parameters to add document')
             return redirect('app:patient:add_document')
         document = Document(
@@ -353,8 +355,8 @@ def get_doctor_emails(request):
             'emails': []
         })
     email_list = list()
-    doctors = UserProfile.objects.filter(email__icontains=query) | UserProfile.objects.filter(
-        first_name__icontains=query) | UserProfile.objects.filter(last_name__icontains=query)
+    doctors = UserProfile.objects.filter(user_type='doctor', account_status='active') & (UserProfile.objects.filter(email__icontains=query) | UserProfile.objects.filter(
+        first_name__icontains=query) | UserProfile.objects.filter(last_name__icontains=query))
     for doctor in doctors:
         email_list.append(doctor.email)
     return JsonResponse(

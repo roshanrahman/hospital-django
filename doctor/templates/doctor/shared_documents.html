@@ -1,0 +1,49 @@
+{% extends 'doctor/base.html' %}
+<!---->{% block body %}
+<main>
+  <div class="columns" style="align-items: center;">
+    <h2 class="type">Shared Documents</h2>
+    <div class="spacer"></div>
+  </div>
+  <form
+    id="openDocumentForm"
+    action="{% url 'app:doctor:open_document' %}"
+    method="post"
+  >
+    {% csrf_token %}
+    <input type="hidden" name="password" id="passwordInput" />
+    <input type="hidden" name="shared_document_id" id="idInput" />
+  </form>
+  {% for shared_document in shared_documents %}
+  <div
+    class="column card outlined"
+    onclick="openDocument('{{ shared_document.id }}')"
+  >
+    <h2>{{ shared_document.shared_document.title }}</h2>
+    <!-- prettier-ignore -->
+    <p>
+      Shared by {{ shared_document.shared_document.patient.first_name }}
+       {{ shared_document.shared_document.patient.last_name }}
+    </p>
+  </div>
+  {% endfor %}
+</main>
+{% endblock body %} {% block script %}
+
+<script>
+  var selectedItemId = "doctor_documents";
+
+  function openDocument(id) {
+    var password = prompt(
+      "Enter the access password given to you by the patient"
+    );
+    if (!password) return;
+    const sharedDocumentIdInput = document.getElementById("idInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const openDocumentForm = document.getElementById("openDocumentForm");
+    sharedDocumentIdInput.value = id;
+    passwordInput.value = password;
+    openDocumentForm.submit();
+  }
+</script>
+{% endblock script %}

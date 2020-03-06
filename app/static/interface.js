@@ -34,6 +34,10 @@ const paths = [
     path: "/patient/documents"
   },
   {
+    id: "doctor_documents",
+    path: "/doctor/documents"
+  },
+  {
     id: "doctor_appointments",
     path: "/doctor/appointments"
   },

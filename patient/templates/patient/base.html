@@ -79,27 +79,7 @@
       <div class="vertical-spacer"></div>
       <div class="vertical-spacer"></div>
     </div>
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-app.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-storage.js"></script>
-
-    <script>
-      // Your web app's Firebase configuration
-      var firebaseConfig = {
-        apiKey: "AIzaSyAmMghRhi331dVXSEGnTm0hI7nM-slh-rQ",
-        authDomain: "hospital-django.firebaseapp.com",
-        databaseURL: "https://hospital-django.firebaseio.com",
-        projectId: "hospital-django",
-        storageBucket: "hospital-django.appspot.com",
-        messagingSenderId: "598521777587",
-        appId: "1:598521777587:web:60c17209143001de350fc6"
-      };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-    </script>
     {% block script %}{% endblock script %}
     <script>
       window.onload = event => {
