@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hospital-django",
+  "private_key_id": "7a99c5f9690bb98f183f7b4a6c7fddb861b008a7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCX9dGdsexUIKvk\nXYubAGalgZwcro0KjbIcQQwqLSjnJD/eftBZO0Nfk74VSlV5tWCmO9OZx2u0Ge8M\nurHZlVI+bQyTyeY1Ja3UI/L30OrHsTRIRp/xCQeehwQ3WNRsweFGqOmVWe/8zEDW\nd/3bYMuHGTdG18S+qHfzC9s7S/Sre+FtQJPSyw4HdRU7+yNH1Q2gjFFePUEOmrLh\n+hClsSYYol2hWYa9otPJxX8HYpwwUa3k7+JQ2Q68GxsKRoX7l/yazPR73wrzoldp\nUCbxuvPOs/jWRhVVtVBrYWEe33Crq0+3sjcLmCjonl/vxXoUX+V3rM6idPO+CQ7A\ngbcg/2IDAgMBAAECggEAQqJ2cpIMsa9J8O/cQfHhEP5OuH0KN/B+g8k6TlxTLVhF\n8YjmT9qe5pBgr/FSnfYdFYfyd+JspiMhIhHT3zeNQvaKp1vHaNLG8Nl6t5SS/1ID\nPRZLGGT/RFKsVKDNNYum/1ceZnFzvQTMAb/IP6SoWuuBw7zl9zzkrF0sm0npVjBk\n2QVuDYBB9CJvRkiikWMRK4MU8SfuWKtofFyYC0+Y5dVR34zwVbJrLOjvvPGCzziP\nyolr1psljWolVMlLZUa7ZajAAZjYrYY0cGmiN0m0ErifZMmKSk5clZTl1dRErgm4\nTwZ/nbPkBSjsMZjwhyZuWTtRdJoNzZHa9R6Qw1kBUQKBgQDVjxIHvisSSsCuh4UU\nDR0Q3LQUvQ4gDbZNcQjcfVMPjYaE9XmbkvAA3uzyJjWsWXeUUaRSVGgmeU/bZde/\nfP5YSLkXYKN0kVhGWhjbFeF0MZ7dhjdB9BlXHRteJP9MgQrQEABXMGd5kapyszd3\nftJRxcCY0foOPk38ExIHIffgDQKBgQC2KOHkgvUdGm6RNTOLVhr4BVEUYYBf+mjH\nE1y9ARYOOnQFYdLXtLag94etV3aph8EBemm9WIGLztln4XKIb5R8rR3hHKaEdSYU\nEJriBdM7n5ssDB3e6OGggrqR6I6ub034o0TsTtI+e6C7Kyf1SuUYIBUy8lpXwdTm\n0sPsVxi2TwKBgESXHApimMDaQ4KKwkJLZ+93g1s50WSYItpCmL8AfYH8SZ1AnltK\nWU1eTCoF/a0qWw7HHgjXVVAuHGjyD9ZP1f0S9me8wSL6X6jQ3TTYlT3VhhnONsc3\nGEBzd8vIBDtVItzqlsFqKYHRODZ4uzLlB7X91rr+jdqvRirVETA7R7qtAoGBAIba\nSyjFPjqWZ8Y98XO0gfCc1wJUkBn9onXGQsB1PmO4KE4XtmQUF6OgvCO6fVFR+7Nh\ncUhIblcXAeGiiAyzNeT6sAUIFco3g8IU7ORo1ZDtPo3kRnTQSMBwJzh/RqmiIsHv\n9MVQMNsq4LnPYBx6npE2pxr5SaJwD3H2FC8x50yHAoGBAM/thjakh2VlCCaHzGmo\n3eJocAWO+oxtT/QWGLnMDbzeYd8slizsmQgB33DdTLx/WwgEWxR73Ymh5fWLNMSw\nZNgnGUBXnckzrrCTLfnMerj8d63FBdEUHL6X+bS6QIDk5+wUbKWVolF4Tjc52dpZ\n2PrJ3VhIVqg8W3DI/UvI+4I7\n-----END PRIVATE KEY-----\n",
+  "client_email": "hospital-django@appspot.gserviceaccount.com",
+  "client_id": "101532464019817861338",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hospital-django%40appspot.gserviceaccount.com"
+}
