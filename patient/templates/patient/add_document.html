@@ -35,6 +35,7 @@
           name="file"
           id="file"
           required
+          accept="image/*, application/pdf, text/*"
           onchange="onFileChanged(event);"
         />
       </div>
@@ -83,24 +84,7 @@
     <h3 class="type">Your document is being uploaded</h3>
   </div>
 </main>
-<!-- 
-<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-storage.js"></script>
 
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyAmMghRhi331dVXSEGnTm0hI7nM-slh-rQ",
-    authDomain: "hospital-django.firebaseapp.com",
-    databaseURL: "https://hospital-django.firebaseio.com",
-    projectId: "hospital-django",
-    storageBucket: "hospital-django.appspot.com",
-    messagingSenderId: "598521777587",
-    appId: "1:598521777587:web:60c17209143001de350fc6"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-</script> -->
 {% endblock body %} {% block script %}
 
 <script>
@@ -118,9 +102,6 @@
   uploadSection.style.display = "none";
 
   var selectedItemId = "patient_documents";
-  var storage = firebase.storage();
-  var storageRef = storage.ref();
-  storageRef = storageRef.child("documents");
 
   function setProgress(percent) {
     const progressElement = document.getElementById("upload-progress");
@@ -155,45 +136,6 @@
     urlInput.value = url;
     titleInput.value = fileTitle;
     formElement.submit();
-  }
-
-  function uploadToFirebase() {
-    const fileElement = document.getElementById("file");
-    selectSection.style.display = "none";
-    uploadSection.style.display = "block";
-    file = fileElement.files[0];
-    console.log(file.name);
-    storageRef = storageRef.child(file.name);
-    var uploadTask = storageRef.put(file);
-    uploadTask.on(
-      "state_changed",
-      function(snapshot) {
-        // Observe state change events such as progress, pause, and resume
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progress);
-        console.log("Upload is " + progress + "% done");
-        switch (snapshot.state) {
-          case firebase.storage.TaskState.PAUSED: // or 'paused'
-            console.log("Upload is paused");
-            break;
-          case firebase.storage.TaskState.RUNNING: // or 'running'
-            console.log("Upload is running");
-            break;
-        }
-      },
-      function(error) {
-        // Handle unsuccessful uploads
-      },
-      function() {
-        // Handle successful uploads on complete
-        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-        uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
-          console.log("File available at", downloadURL);
-          addDocument(downloadURL);
-        });
-      }
-    );
   }
 </script>
 {% endblock script %}

@@ -98,7 +98,7 @@
                   {% if appointment.appointment_status == 'completed' %}
                     success
                   {% endif %}
-                  {% if appointment.appointment_status == 'cancelled' %}
+                  {% if appointment.appointment_status == 'cancelled' or appointment.appointment_status == 'noshow' %}
                     error
                   {% endif %}
                     "
@@ -110,9 +110,18 @@
                   {% else %}
                   Scheduled
                   {% endif %}
+
+                  
+                  
+                    
                     
                   {% else %}
-                  {{appointment.appointment_status | title }}
+                  {% if appointment.appointment_status == 'noshow' %}
+                    Incomplete
+                    {% else %}
+                    {{appointment.appointment_status | title }}
+
+                  {% endif %}
                   {% endif %}
                   </div>
                 </div>

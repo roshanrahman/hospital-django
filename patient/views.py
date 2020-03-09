@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -226,20 +226,31 @@ def make_appointment(request):
         return redirect('app:index')
     if(redirect_if_no_session(request)):
         return redirect_if_no_session(request)
+    date = request.session['booking']['date']
+    date_obj = datetime.strptime(date, '%Y-%m-%d %H:%M')
+    current_date = datetime.now() + timedelta(hours=5, minutes=30)
+    print(date_obj.time())
+    print(current_date.time())
+    if date_obj.time() < current_date.time():
+        messages.error(request, 'Invalid date')
+        return redirect('app:index')
     patient_id = request.user.id
     doctor_id = request.session['booking']['doctor_id']
     hospital_id = request.session['booking']['hospital_id']
     specialization_id = request.session['booking']['specialization_id']
-    date = request.session['booking']['date']
-    Appointment.objects.create(
-        with_specialization=Specialization.objects.get(
-            pk=int(specialization_id)),
-        doctor=UserProfile.objects.get(pk=int(doctor_id)),
-        patient=UserProfile.objects.get(pk=int(patient_id)),
-        at_hospital=Hospital.objects.get(pk=int(hospital_id)),
-        time_slot=date,
-        notes=''
-    )
+    try:
+        Appointment.objects.create(
+            with_specialization=Specialization.objects.get(
+                pk=int(specialization_id)),
+            doctor=UserProfile.objects.get(pk=int(doctor_id)),
+            patient=UserProfile.objects.get(pk=int(patient_id)),
+            at_hospital=Hospital.objects.get(pk=int(hospital_id)),
+            time_slot=date,
+            notes=''
+        )
+    except Exception:
+        messages.error(request, 'The time slot is not available')
+        return redirect('app:index')
     with_specialization = Specialization.objects.get(
         pk=int(specialization_id))
     doctor = UserProfile.objects.get(pk=int(doctor_id))
@@ -315,12 +326,20 @@ def appointment_details(request, appointment_id=None):
 def patient_documents(request):
     documents = Document.objects.filter(patient=request.user)
     context = dict()
-    context['documents'] = documents
+    documents_list = list()
+    for document in documents:
+        documents_list.append({
+            'id': document.id,
+            'title': document.title,
+            'url': document.url,
+            'shared_count': SharedDocument.objects.filter(shared_document=document).count()
+        })
+    context['documents'] = documents_list
     return render(request, 'patient/documents.html', context)
 
 
 def patient_document_details(request, document_id):
-    document = Document.objects.get(pk=document_id)
+    document = get_object_or_404(Document, pk=document_id)
     context = dict()
     context['document'] = document
     shared_documents = SharedDocument.objects.filter(
@@ -333,9 +352,13 @@ def patient_documents_add(request):
     if request.method == "POST":
         title = request.POST.get('title', None)
         file = request.FILES
-        upload_file_to_firebase(file.get('file'))
+        url = upload_file_to_firebase(file.get('file'))
         if(not title or not file):
             messages.error(request, 'Missing parameters to add document')
+            return redirect('app:patient:add_document')
+        if(not url):
+            messages.error(
+                request, 'There was an error trying to upload your document. Please try again.')
             return redirect('app:patient:add_document')
         document = Document(
             title=title,
@@ -346,6 +369,14 @@ def patient_documents_add(request):
         messages.success(request, 'Document added successfully')
         return redirect('app:patient:document_details', document_id=document.id)
     return render(request, 'patient/add_document.html')
+
+
+def patient_documents_delete(request):
+    document_id = request.POST.get('document_id')
+    document = get_object_or_404(Document, pk=document_id)
+    document.delete()
+    messages.success(request, 'Document deleted.')
+    return redirect('app:patient:documents')
 
 
 def get_doctor_emails(request):
@@ -383,4 +414,13 @@ def share_documents(request):
             request, 'Could not find a doctor with the email address you provided')
         return redirect('app:patient:document_details', document_id=document_id)
     messages.success(request, f'Document shared with Dr. {doctor.first_name}')
+    return redirect('app:patient:document_details', document_id=document_id)
+
+
+def delete_shared_document(request):
+    shared_document_id = request.POST.get('shared_document_id', None)
+    shared_document = get_object_or_404(SharedDocument, pk=shared_document_id)
+    document_id = shared_document.shared_document.id
+    shared_document.delete()
+    messages.success(request, 'The sharing has been removed')
     return redirect('app:patient:document_details', document_id=document_id)

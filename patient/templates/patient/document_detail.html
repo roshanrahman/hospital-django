@@ -2,9 +2,15 @@
 <!---->{% block body %}
 <main>
   <div id="selectSection">
+    <form  id="delete-document-form" action="{% url 'app:patient:delete_document' %}" method="post"> 
+        {% csrf_token %}
+        <input  type="hidden" name="document_id" value="{{ document.id }}">
+    </form>
     <div class="columns" style="align-items: center;">
       <h2 class="type">{{ document.title }}</h2>
       <div class="spacer"></div>
+      <button class="btn error" onclick="deleteDocument()">Delete document</button>
+      <div class="pseudomargin"></div>
       <a href="{{ document.url }}" target="_blank">
         <button class="btn primary">
             View Document
@@ -15,7 +21,14 @@
     <hr />
     <div class="vertical-spacer"></div>
     <div class="columns" style="align-items: center;">
+        
+        {% if shared_documents %}
         <h3 class="type">Shared with</h3>
+{% else %}
+<h3 class="type">This document is not being shared with any doctor</h3>
+
+        {% endif %}
+
         <div class="spacer"></div>
         
           <button id="addDoctorButton" class="btn" onclick="enableForm(true)">
@@ -30,7 +43,7 @@
             <div class="field">
                 <datalist id="emailSuggestions"></datalist>
                 <span>Enter the email address of the doctor you want to share this document with</span>
-                <input required oninput="onEmailInputChanged(event);" autocomplete="off" list="emailSuggestions" type="text" name="email" placeholder="Doctor's email"/>
+                <input required oninput="onEmailInputChanged(event);" autocomplete="off" list="emailSuggestions" type="email" name="email" placeholder="Doctor's email"/>
             </div>
 
             <div class="field">
@@ -53,17 +66,27 @@
     
     {% for document in shared_documents %}
     <div class="card outlined">
+        <form action="{% url 'app:patient:delete_shared_document' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="shared_document_id" value="{{ document.id }}" />
         <div class="row">
             <h3>Dr. {{ document.doctor.first_name }} {{document.doctor.last_name }}</h3>
             <div class="pseudomargin"></div>
             ({{ document.doctor.email }})
             <div class="spacer"></div>
-            <button class="icon-btn">
+            <button class="icon-btn" type="submit">
                 <i class="material-icons">delete</i>
             </button>
         </div>
+    </form>
     </div>
+    <div class="vertical-spacer"></div>
     {% endfor %}
+<hr>
+    <h3 class="type">Preview</h3>
+<div class="columns">
+    <div class="column">    <iframe src="{{ document.url }}" ></iframe></div>
+</div>
         
 </main>
 {% endblock body %} {% block script %}
@@ -100,6 +123,13 @@ function enableForm(shouldShow) {
     } else {
         addDoctorForm.style.display = 'none';
         addDoctorButton.style.display = 'block';
+    }
+}
+
+function deleteDocument() {
+    if(confirm('Are you sure you want to delete this document?')) {
+        const deleteForm = document.getElementById('delete-document-form');
+        deleteForm.submit();
     }
 }
 

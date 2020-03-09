@@ -16,6 +16,11 @@
       >Cancelled</span
     >
     {% endif %}
+    {% if appointment.appointment_status == 'noshow' %}
+    <span class="status-chip" style="background-color: rgb(156, 4, 4);"
+      >INCOMPLETE</span
+    >
+    {% endif %}
   </div>
 
   <div class="vertical-spacer"></div>
@@ -93,6 +98,9 @@
       {% if appointment.appointment_status == 'cancelled' %} 
       <span class='error'>Appointment was cancelled</span> 
       {% endif %}
+      {% if appointment.appointment_status == 'noshow' %} 
+      <span class='error'>Patient did not show up</span> 
+      {% endif %}
     </h3>
   </div>
 
@@ -125,7 +133,7 @@
 
   <form action="{% url 'app:doctor:doctor_appointments' %}" method="get"></form>
 
-  {% if allow_actions %}
+  {% if allow_actions and not ongoing %}
 
   <div class="columns flex-align-center" id="actions-section">
     <div class="column">
@@ -193,7 +201,7 @@
   
   </div>
   
-  {% if appointment.appointment_status == 'completed' or appointment.appointment_status == 'cancelled' %}
+  {% if not appointment.appointment_status == 'pending' %}
   <form action="{% url 'app:patient:select_slot' %}" method="post">
   <div class="columns flex-align-center" id="actions-section">
     <div class="column">

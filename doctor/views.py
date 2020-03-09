@@ -164,21 +164,16 @@ def appointment_details(request, appointment_id=None):
             context['allow_actions'] = True
         context['appointment'] = appointment
         context['ongoing'] = ongoing
-
+        shared_documents = SharedDocument.objects.filter(
+            doctor=request.user, shared_document__patient=appointment.patient)
+        context['shared_documents'] = shared_documents
     except Exception as e:
         print(e)
         return redirect('app:doctor:doctor_appointments')
     return render(request, 'doctor/appointment_detail.html', context)
 
 
-def doctor_documents(request):
-    shared_documents = SharedDocument.objects.filter(doctor=request.user)
-    context = dict()
-    context['shared_documents'] = shared_documents
-    return render(request, 'doctor/shared_documents.html', context)
-
-
-def open_document(request):
+def open_document(request, appointment_id):
     password = request.POST.get('password', None)
     shared_document_id = request.POST.get('shared_document_id', None)
     shared_document = None
@@ -186,10 +181,10 @@ def open_document(request):
         shared_document = SharedDocument.objects.get(pk=shared_document_id)
     except Exception:
         messages.error(request, 'The shared document could not be found')
-        return redirect('app:doctor:doctor_documents')
+        return redirect('app:doctor:appointment_detail', appointment_id=appointment_id)
     if password == shared_document.password:
         url = shared_document.shared_document.url
         return redirect(url)
     messages.error(
         request, 'The password is incorrect. Please get the password from the patient')
-    return redirect('app:doctor:doctor_documents')
+    return redirect('app:doctor:appointment_detail', appointment_id=appointment_id)

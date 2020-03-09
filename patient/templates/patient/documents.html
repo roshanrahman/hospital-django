@@ -18,8 +18,11 @@
     class="no-underline"
     href="{% url 'app:patient:document_details' document_id=document.id %}"
   >
-    <div class="card outlined">
-      <h3 class="type">{{ document.title }}</h3>
+    <div class="card outlined" style="padding: 18px 24px 18px 24px">
+      <h3 class="type" style="margin:0;">{{ document.title }}</h3>
+      {% if document.shared_count %}
+      <span>Shared with {{ document.shared_count }} doctors</span>
+      {% endif %}
     </div>
   </a>
   <div class="vertical-spacer"></div>
