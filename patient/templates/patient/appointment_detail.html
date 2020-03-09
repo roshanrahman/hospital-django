@@ -7,15 +7,18 @@
 
     {% if appointment.appointment_status == 'pending' %}
     <span class="status-chip" style="background-color: rgb(156, 116, 4);"
-      >Scheduled</span
-    >
+      >{% if ongoing %} {{ ongoing.status }} {% else %} Scheduled {% endif %}</span>
     {% endif %} {% if appointment.appointment_status == 'completed' %}
     <span class="status-chip" style="background-color: rgb(4, 156, 80);"
-      >Completed</span
-    >
+      >Completed</span>
     {% endif %} {% if appointment.appointment_status == 'cancelled' %}
     <span class="status-chip" style="background-color: rgb(156, 4, 4);"
       >Cancelled</span
+    >
+    {% endif %}
+    {% if appointment.appointment_status == 'noshow' %}
+    <span class="status-chip" style="background-color: rgb(156, 4, 4);"
+      >INCOMPLETE</span
     >
     {% endif %}
   </div>
@@ -47,7 +50,22 @@
   <div class="vertical-spacer"></div>
   <hr />
   <div class="vertical-spacer"></div>
-
+  <div class="hospital-card-details-item">
+    <label>Doctor Name</label>
+    <h3>
+      Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}
+    </h3>
+  </div>
+  
+  <div class="vertical-spacer"></div>
+  <hr />
+  <div class="vertical-spacer"></div>
+  <div class="hospital-card-details-item">
+    <label>Specialization of treatment required</label>
+    <h3>
+      {{ appointment.with_specialization.name }}
+    </h3>
+  </div>
   <div class="hospital-card-details-item">
     <label>Appointment Date</label>
     <h3>
@@ -71,7 +89,8 @@
     <!-- prettier-ignore -->
     <h3>
       {% if appointment.appointment_status == 'pending' %} 
-      <span class="warning">Appointment is scheduled</span>
+      <span class="warning">{% if ongoing %} {{ ongoing.long }} {% else %}
+        Appointment is scheduled {% endif %}</span>
       {% endif %} 
       {% if appointment.appointment_status == 'completed' %} 
       <span class="success">Appointment was completed</span> 
@@ -79,8 +98,23 @@
       {% if appointment.appointment_status == 'cancelled' %} 
       <span class='error'>Appointment was cancelled</span> 
       {% endif %}
+      {% if appointment.appointment_status == 'noshow' %} 
+      <span class='error'>Patient did not show up</span> 
+      {% endif %}
     </h3>
   </div>
+
+  {% if appointment.appointment_status == 'completed' %}
+  <div class="vertical-spacer"></div>
+  <div class="doctors-note">
+    <div class="hospital-card-details-item">
+      <label>Doctor's Note</label>
+      <h3>
+        {{ appointment.notes }}
+      </h3>
+    </div>
+  </div>
+  {% endif %}
   <div class="vertical-spacer"></div>
   <hr />
   <div class="vertical-spacer"></div>
@@ -99,7 +133,7 @@
 
   <form action="{% url 'app:doctor:doctor_appointments' %}" method="get"></form>
 
-  {% if allow_actions %}
+  {% if allow_actions and not ongoing %}
 
   <div class="columns flex-align-center" id="actions-section">
     <div class="column">
@@ -166,6 +200,30 @@
       </div>
   
   </div>
+  
+  {% if not appointment.appointment_status == 'pending' %}
+  <form action="{% url 'app:patient:select_slot' %}" method="post">
+  <div class="columns flex-align-center" id="actions-section">
+    <div class="column">
+      <span class="grey">Appointment Actions</span>
+    </div>
+   
+
+      {% csrf_token %}
+
+<input type="hidden" name="doctor_id" value="{{ appointment.doctor.id }}"/>
+<input type="hidden" name="hospital_id" value="{{ appointment.at_hospital.id }}"/>
+<input type="hidden" name="specialization_id" value="{{ appointment.with_specialization.id }}"/>
+    <div class="field">
+      <button class="btn" style="margin-top: 8px;" >
+        Re-schedule Appointment
+      </button>
+    </div>
+  
+  </div>
+</form>
+  {% endif %}
+    
   <div class="vertical-spacer"></div>
 </main>
 {% endblock body %} {% block script %}

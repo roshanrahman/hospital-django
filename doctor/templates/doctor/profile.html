@@ -37,6 +37,17 @@
           </div>
         </div>
         <div class="field">
+          <span>A short description of yourself</span>
+          <textarea
+            type="text"
+            rows="5"
+            name="bio"
+            value="{{ user.bio }}"
+            placeholder="Write a short paragraph describing yourself, your work and expertise"
+            required
+            disabled >{{ user.bio }}</textarea>
+        </div>
+        <div class="field">
           <span>Mobile Number</span>
           <input
             pattern="[0-9]{10}"
@@ -61,6 +72,42 @@
             disabled
           />
         </div>
+        <div class="field">
+          <span>Specialization</span>
+          <input
+            type="text"
+            name="specialization"
+            maxlength="10"
+            value="{{ user.specialization.name }}"
+            placeholder="Specialization"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Indian Medical Registry Number</span>
+          <input
+            type="text"
+            name="registration"
+            maxlength="10"
+            value="{{ user.registration_number }}"
+            placeholder="Registration Number"
+            required
+            disabled
+          />
+        </div>
+        <div class="field">
+          <span>Qualification</span>
+          <input
+            type="text"
+            name="qualification"
+            maxlength="10"
+            value="{{ user.qualification }}"
+            placeholder="Qualification"
+            required
+            disabled
+          />
+        </div>
         <!-- prettier-ignore -->
         <div class="field">
           <span>Working on National Holidays</span>
@@ -80,13 +127,12 @@
             >
           </label>
         </div>
-        <hr />
-        <h3 class="type" style="padding-left: 24px;">
+        <h3 class="type" style="display:none; padding-left: 24px;">
           Select your working preference for each week day
         </h3>
         <div
           class="container"
-          style="display: flex; flex-direction: column; max-width: 400px;"
+          style="display: none; flex-direction: column; max-width: 400px;"
         >
           <div
             class="column"
@@ -276,9 +322,15 @@
   });
 
   function enableForm(status) {
-    const formElements = document.querySelectorAll("input, select");
+    const formElements = document.querySelectorAll("input, select, textarea");
+    const exclusions = [
+'email',
+'qualification',
+'registration',
+'specialization'
+    ]
     formElements.forEach(element => {
-      if (element.name == "email") return;
+      if (exclusions.indexOf(element.name) > -1) return;
       if (status) {
         element.disabled = false;
       } else {

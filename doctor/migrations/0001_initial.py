@@ -14,11 +14,22 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Specialization',
+            name='Feedback',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('rating', models.IntegerField()),
+                ('description', models.TextField()),
+            ],
+            options={
+                'verbose_name': 'Feedback',
+                'verbose_name_plural': 'Feedbacks',
+            },
+        ),
+        migrations.CreateModel(
+            name='SharedDocument',
             fields=[
                 ('basemodel_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='app.BaseModel')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.CharField(blank=True, max_length=100)),
+                ('password', models.CharField(max_length=30)),
             ],
             options={
                 'abstract': False,

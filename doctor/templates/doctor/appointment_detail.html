@@ -6,9 +6,9 @@
     <div class="spacer"></div>
 
     {% if appointment.appointment_status == 'pending' %}
-    <span class="status-chip" style="background-color: rgb(156, 116, 4);"
-      >Scheduled</span
-    >
+    <span class="status-chip" style="background-color: rgb(156, 116, 4);">
+      {% if ongoing %} {{ ongoing.status }} {% else %} Scheduled {% endif %}
+    </span>
     {% endif %} {% if appointment.appointment_status == 'completed' %}
     <span class="status-chip" style="background-color: rgb(4, 156, 80);"
       >Completed</span
@@ -16,6 +16,10 @@
     {% endif %} {% if appointment.appointment_status == 'cancelled' %}
     <span class="status-chip" style="background-color: rgb(156, 4, 4);"
       >Cancelled</span
+    >
+    {% endif %} {% if appointment.appointment_status == 'noshow' %}
+    <span class="status-chip" style="background-color: rgb(156, 4, 4);"
+      >INCOMPLETE</span
     >
     {% endif %}
   </div>
@@ -71,7 +75,8 @@
     <!-- prettier-ignore -->
     <h3>
       {% if appointment.appointment_status == 'pending' %} 
-      <span class="warning">Appointment is scheduled</span>
+      <span class="warning">{% if ongoing %} {{ ongoing.long }} {% else %}
+        Appointment is scheduled {% endif %}</span>
       {% endif %} 
       {% if appointment.appointment_status == 'completed' %} 
       <span class="success">Appointment was completed</span> 
@@ -79,8 +84,24 @@
       {% if appointment.appointment_status == 'cancelled' %} 
       <span class='error'>Appointment was cancelled</span> 
       {% endif %}
+      {% if appointment.appointment_status == 'noshow' %} 
+      <span class='error'>Patient did not show up</span> 
+      {% endif %}
     </h3>
   </div>
+
+  {% if appointment.appointment_status == 'completed' %}
+  <div class="vertical-spacer"></div>
+  <div class="doctors-note">
+    <div class="hospital-card-details-item">
+      <label>Doctor's Note</label>
+      <h3>
+        {{ appointment.notes }}
+      </h3>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="vertical-spacer"></div>
   <hr />
   <div class="vertical-spacer"></div>
@@ -97,6 +118,33 @@
   <div class="vertical-spacer"></div>
   <hr />
 
+  {% if shared_documents %}
+  <div class="columns" style="align-items: center;">
+    <h3 class="type">Shared Documents</h3>
+    <div class="spacer"></div>
+  </div>
+  <form
+    id="openDocumentForm"
+    action="{% url 'app:doctor:open_document' appointment_id=appointment.id %}"
+    method="post"
+  >
+    {% csrf_token %}
+    <input type="hidden" name="password" id="passwordInput" />
+    <input type="hidden" name="shared_document_id" id="idInput" />
+  </form>
+  {% for shared_document in shared_documents %}
+  <div
+    class="column card outlined clickable"
+    onclick="openDocument('{{ shared_document.id }}')"
+  >
+    <h4 class="type" style="padding-left:16px">
+      {{ shared_document.shared_document.title }}
+    </h4>
+  </div>
+  <div class="vertical-spacer"></div>
+
+  {% endfor %} {% endif %}
+
   <form action="{% url 'app:doctor:doctor_appointments' %}" method="get"></form>
 
   {% if allow_actions %}
@@ -106,6 +154,7 @@
       <span class="grey">Appointment Actions</span>
     </div>
 
+    {% if not ongoing %}
     <div class="field">
       <button
         class="btn"
@@ -115,37 +164,41 @@
         Cancel Appointment
       </button>
     </div>
-
-    {% if today %}
+    {% endif %} {% if today %}
     <div class="field">
-      <form action="{{ request.path }}" method="post">
-        {% csrf_token %}
-        <input
-          type="text"
-          name="status"
-          value="completed"
-          style="display: none;"
-        />
-        <button type="submit" class="btn primary" style="margin-top: 8px;">
-          Mark Appointment Complete
-        </button>
-      </form>
+      <button
+        onclick="patientDidNotArrive();"
+        class="btn"
+        style="margin-top: 8px;"
+      >
+        Patient did not arrive
+      </button>
+      <button disabled="disabled" hidden type="submit"></button>
+    </div>
+    <div class="field">
+      <button
+        onclick="toggleCompleteDialog(true);"
+        class="btn primary"
+        style="margin-top: 8px;"
+      >
+        Mark Appointment Complete
+      </button>
+      <button disabled="disabled" hidden type="submit"></button>
     </div>
     {% endif %}
   </div>
 
   {% endif %}
   <div class="columns" id="cancel-section" style="display: none;">
+    <form action="{{ request.path }}" method="post" id="noshow-form">
+      {% csrf_token %}
+      <input type="hidden" name="status" value="noshow" />
+    </form>
     <form action="{{ request.path }}" method="post" id="cancel-form">
       <div class="column" style="display: flex; flex-direction: column;">
         <h3>Please state the reason for cancelling</h3>
         {% csrf_token %}
-        <input
-          type="text"
-          name="status"
-          value="cancelled"
-          style="display: none;"
-        />
+        <input type="hidden" name="status" value="cancelled" />
         <textarea
           required
           name="reason"
@@ -171,11 +224,48 @@
     </form>
   </div>
   <div class="vertical-spacer"></div>
+  <div class="modal-container hidden" id="notes-modal">
+    <div class="modal-content">
+      <form action="{{ request.path }}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="status" value="completed" />
+
+        <div class="modal-header">
+          Provide appointment notes
+        </div>
+        <div class="modal-subtitle">
+          Please provide your notes about the appointment
+        </div>
+
+        <div class="field">
+          <!-- <span>
+            <span>Quick Complete: </span>
+            <a>Re-visit suggested</a>
+            <a>Further consultation not necessary</a>
+            <a>Re-visit suggested</a>
+          </span> -->
+          <div class="vertical-spacer"></div>
+          <textarea
+            name="reason"
+            id="reason-text-field"
+            rows="6"
+            required
+            placeholder="Type here"
+          ></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="toggleCompleteDialog(false);">
+            Go Back
+          </button>
+          <button class="btn primary" type="submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </main>
 {% endblock body %} {% block script %}
 
 <script>
-  var selectedItemId = "doctor_appointments";
   const actionSection = document.querySelector("#actions-section");
   const cancelSection = document.querySelector("#cancel-section");
   function showCancel() {
@@ -186,6 +276,15 @@
     actionSection.style.display = "flex";
     cancelSection.style.display = "none";
   }
+
+  function toggleCompleteDialog(visible) {
+    const notesModal = document.getElementById("notes-modal");
+    if (visible) {
+      notesModal.classList.remove("hidden");
+    } else {
+      notesModal.classList.add("hidden");
+    }
+  }
   function cancelAppointment() {
     const cancelForm = document.querySelector("#cancel-form");
     if (
@@ -195,6 +294,29 @@
     ) {
       cancelForm.submit();
     }
+  }
+  function patientDidNotArrive() {
+    const cancelForm = document.querySelector("#noshow-form");
+    if (
+      confirm(
+        "Are you sure you want to continue marking the appointment incomplete as the patient did not show up?"
+      )
+    ) {
+      cancelForm.submit();
+    }
+  }
+
+  function openDocument(id) {
+    var password = prompt(
+      "Enter the access password given to you by the patient"
+    );
+    if (!password) return;
+    const sharedDocumentIdInput = document.getElementById("idInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const openDocumentForm = document.getElementById("openDocumentForm");
+    sharedDocumentIdInput.value = id;
+    passwordInput.value = password;
+    openDocumentForm.submit();
   }
 </script>
 {% endblock script %} {% block title %} {{ appointment.patient.first_name }} for

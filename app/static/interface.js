@@ -30,6 +30,14 @@ const paths = [
     path: "/patient/appointments"
   },
   {
+    id: "patient_documents",
+    path: "/patient/documents"
+  },
+  {
+    id: "doctor_documents",
+    path: "/doctor/documents"
+  },
+  {
     id: "doctor_appointments",
     path: "/doctor/appointments"
   },
@@ -84,15 +92,26 @@ const expandToggleIndicatorElement = document.getElementById(
   "expand-toggle-indicator"
 );
 
-expandToggleAreaElement.style.display = "none";
+try {
+  expandToggleAreaElement.style.display = "none";
+  expandToggleElement.addEventListener("click", () => {
+    const isHidden = expandToggleAreaElement.style.display === "none";
+    if (isHidden) {
+      expandToggleAreaElement.style.display = "flex";
+      expandToggleIndicatorElement.style.transform = "rotate(180deg)";
+    } else {
+      expandToggleAreaElement.style.display = "none";
+      expandToggleIndicatorElement.style.transform = "rotate(0deg)";
+    }
+  });
+} catch (error) {
+  console.log(error);
+}
 
-expandToggleElement.addEventListener("click", () => {
-  const isHidden = expandToggleAreaElement.style.display === "none";
-  if (isHidden) {
-    expandToggleAreaElement.style.display = "flex";
-    expandToggleIndicatorElement.style.transform = "rotate(180deg)";
-  } else {
-    expandToggleAreaElement.style.display = "none";
-    expandToggleIndicatorElement.style.transform = "rotate(0deg)";
-  }
+const mainContent = document.querySelectorAll("main");
+mainContent.forEach(main => {
+  main.addEventListener("click", () => {
+    isSideNavOpen = false;
+    sideNav.classList.remove("open");
+  });
 });

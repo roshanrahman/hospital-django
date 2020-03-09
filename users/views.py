@@ -10,15 +10,33 @@ from specializations.models import Specialization
 from oauth2_provider.models import AccessToken
 from hospital_django.settings import OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET
 from hospital_django.settings import EMAIL_HOST_USER, BASE_URL
+from helpers.common import resolve_integrity_error_string
 import secrets
 import requests
 from urllib.parse import urlencode
+
+QUALIFICATIONS = [
+    'Bachelor of Medicine, Bachelor of Surgery (MBBS, BMBS, MBChB, MBBCh)',
+    'Doctor of Medicine (MD, Dr.MuD, Dr.Med)',
+    'Doctor of Osteopathic Medicine (DO)',
+    'Master of Clinical Medicine (MCM)',
+    'Master of Medical Science (MMSc, MMedSc)',
+    'Master of Medicine (MM, MMed)',
+    'Master of Philosophy (MPhil)',
+    'Master of Surgery (MS, MSurg, MChir, MCh, ChM, CM)',
+    'Master of Science in Medicine or Surgery (MSc)',
+    'Doctor of Clinical Medicine (DCM)',
+    'Doctor of Clinical Surgery (DClinSurg)',
+    'Doctor of Medical Science (DMSc, DMedSc)',
+    'Doctor of Surgery (DS, DSurg)',
+]
 
 
 def register(request):
     context = {
         'register_form': RegisterUserForm,
-        'specializations': Specialization.objects.all()
+        'specializations': Specialization.objects.all(),
+        'qualifications': QUALIFICATIONS
     }
     if request.method == 'GET':
         return render(request, 'users/register.html', context=context)
@@ -28,8 +46,14 @@ def register(request):
         # TODO Validate
         try:
             specialization = form_data.get('specialization')
+            qualification = form_data.get('qualification')
+            registration_number = form_data.get('registration')
+            bio = form_data.get('bio')
             if(form_data.get('user_type') == 'patient'):
                 specialization = None
+                qualification = None
+                registration_number = None
+                bio = None
             user = UserProfile.objects.create_user(
                 email=form_data.get('email'),
                 password=form_data.get('password'),
@@ -39,12 +63,15 @@ def register(request):
                 user_type=form_data.get('user_type', 'patient'),
                 account_status="pending",
                 specialization_id=int(
-                    specialization) if specialization else None
+                    specialization) if specialization else None,
+                qualification=qualification,
+                registration_number=registration_number,
+                bio=bio
             )
         except IntegrityError as err:
             print(err)
             messages.error(
-                request, 'The email you provided already exists, please use another email address')
+                request, resolve_integrity_error_string(err))
             return redirect('users:register')
         except Exception as exp:
             messages.error(request, str(exp))
@@ -58,7 +85,8 @@ def register(request):
 def fill_missing(request):
     context = {
         'user': request.user,
-        'specializations': Specialization.objects.all()
+        'specializations': Specialization.objects.all(),
+        'qualifications': QUALIFICATIONS
     }
     if request.method == 'GET':
         return render(request, 'users/fill_missing.html', context=context)
@@ -76,12 +104,15 @@ def fill_missing(request):
             user.user_type = form_data.get('user_type')
             if(form_data.get('user_type') == 'doctor'):
                 user.specialization_id = form_data.get('specialization', None)
+                user.qualification = form_data.get('qualification', None)
+                user.registration_number = form_data.get('registration', None)
+                user.bio = form_data.get('bio', None)
             user.account_status = "active"
             user.save()
         except IntegrityError as err:
             print(err)
             messages.error(
-                request, 'There was an error trying to register your account')
+                request, resolve_integrity_error_string(err))
             return redirect('users:fill_missing')
         except Exception as exp:
             print(exp)

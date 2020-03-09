@@ -37,8 +37,9 @@
       />
     </div>
   </div>
+
   <div class="field">
-    <span>Enter your mobile number.</span>
+    <span>Enter your mobile number (10 digits)</span>
     <input
       pattern="[0-9]{10}"
       type="text"
@@ -56,9 +57,38 @@
       <option value="patient">Patient</option>
     </select>
   </div>
-  <div class="field" id="specialization-list" style="display: none;">
+  <div class="field doctor-only" id="registration">
+    <span>Provide your Indian Medical Registry Number</span>
+    <input
+      class="doctor-only-input"
+      type="text"
+      name="registration"
+      maxlength="10"
+      pattern="^([0-9]+)$"
+    />
+  </div>
+  <div class="field doctor-only" id="registration">
+    <span>Enter your academic qualification</span>
+    <datalist id="qualifications">
+      {% for qualification in qualifications %}
+      <option value="{{ qualification }}"></option>
+      {% endfor %}
+    </datalist>
+
+    <input
+      class="doctor-only-input"
+      list="qualifications"
+      type="text"
+      name="qualification"
+    />
+  </div>
+  <div class="field doctor-only" id="specialization-list">
     <span>Select your specialization</span>
-    <select id="specialization-select" required name="specialization">
+    <select
+      class="doctor-only-input"
+      id="specialization-select"
+      name="specialization"
+    >
       <option value="" disabled selected>Select a specialization</option>
       {% for specialization in specializations %}
       <option value="{{ specialization.id }}">
@@ -67,6 +97,20 @@
       {% endfor %}
     </select>
   </div>
+  <div class="field doctor-only">
+    <span>A short description of yourself</span>
+    <!-- prettier-ignore -->
+    <textarea
+      type="text"
+      rows="5"
+      name="bio"
+      class="doctor-only-input"
+      value="{{ user.bio }}"
+      placeholder="Write a short paragraph describing yourself, your work and expertise"
+      required
+    >{{ user.bio }}</textarea>
+  </div>
+
   <div class="field">
     <button type="submit" class="btn primary flex-end">Submit</button>
   </div>
@@ -78,15 +122,27 @@
   function onUserTypeChanged(event) {
     let user_type = event.target.value;
     if (user_type === "doctor") {
-      document.getElementById("specialization-list").style.display = "flex";
-      document
-        .getElementById("specialization-select")
-        .setAttribute("required", "true");
+      const doctorOnlyList = document.querySelectorAll(".doctor-only");
+      doctorOnlyList.forEach(element => {
+        element.style.display = "flex";
+      });
+      const doctorOnlyInputsList = document.querySelectorAll(
+        ".doctor-only-input"
+      );
+      doctorOnlyInputsList.forEach(element => {
+        element.setAttribute("required", "true");
+      });
     } else {
-      document.getElementById("specialization-list").style.display = "none";
-      document
-        .getElementById("specialization-select")
-        .removeAttribute("required");
+      const doctorOnlyList = document.querySelectorAll(".doctor-only");
+      doctorOnlyList.forEach(element => {
+        element.style.display = "none";
+      });
+      const doctorOnlyInputsList = document.querySelectorAll(
+        ".doctor-only-input"
+      );
+      doctorOnlyInputsList.forEach(element => {
+        element.removeAttribute("required");
+      });
     }
   }
 </script>

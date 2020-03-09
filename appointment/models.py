@@ -6,6 +6,7 @@ from hospital.models import Hospital
 
 APPOINTMENT_STATUS_CHOICES = [
     ('pending', 'Pending'),
+    ('noshow', 'Patient did not show up'),
     ('completed', 'Completed'),
     ('cancelled', 'Cancelled'),
 ]
@@ -13,6 +14,7 @@ APPOINTMENT_STATUS_CHOICES = [
 
 # Create your models here.
 class Appointment(BaseModel):
+    display_id = models.CharField(max_length=20)
     appointment_status = models.CharField(default='pending',
                                           choices=APPOINTMENT_STATUS_CHOICES, max_length=20)
     with_specialization = models.ForeignKey(
@@ -28,3 +30,4 @@ class Appointment(BaseModel):
         Hospital, on_delete=models.CASCADE, related_name='+')
     time_slot = models.DateTimeField()
     notes = models.TextField(null=True)
+    feedback_given = models.BooleanField(default=False)

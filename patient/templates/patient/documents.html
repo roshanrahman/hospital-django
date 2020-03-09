@@ -1,0 +1,37 @@
+{% extends 'patient/base.html' %}
+<!---->{% block body %}
+<main>
+  <div class="columns" style="align-items: center;">
+    <h2 class="type">Documents</h2>
+    <div class="spacer"></div>
+    <a href="{% url 'app:patient:add_document' %}">
+      <button class="btn primary">New Document</button>
+    </a>
+  </div>
+
+  <hr />
+  <div class="vertical-spacer"></div>
+
+  {% for document in documents %}
+
+  <a
+    class="no-underline"
+    href="{% url 'app:patient:document_details' document_id=document.id %}"
+  >
+    <div class="card outlined" style="padding: 18px 24px 18px 24px">
+      <h3 class="type" style="margin:0;">{{ document.title }}</h3>
+      {% if document.shared_count %}
+      <span>Shared with {{ document.shared_count }} doctors</span>
+      {% endif %}
+    </div>
+  </a>
+  <div class="vertical-spacer"></div>
+
+  {% endfor %}
+</main>
+{% endblock body %} {% block script %}
+
+<script>
+  var selectedItemId = "patient_documents";
+</script>
+{% endblock script %}

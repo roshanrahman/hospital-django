@@ -157,6 +157,7 @@
   let datePickerInput = null;
   let selectedDate = moment();
   let selectedTimeSlot = null;
+  let cache = null;
 
   function handleAppointmentSubmit() {
     const makeAppointmentForm = document.querySelector(
@@ -219,18 +220,19 @@
   }
 
   function buildSlotChip(start, end, available) {
-    start_date = moment();
+    start_date = moment(selectedDate);
     start_date.hour(start.hours);
     start_date.minute(start.minutes);
-    end_date = moment();
+    end_date = moment(selectedDate);
     end_date.hour(end.hours);
     end_date.minute(end.minutes);
+    is_between = moment().isAfter(start_date);
     const chip = document.createElement("div");
     chip.classList.add("date-chip");
     if (selectedTimeSlot && selectedTimeSlot.full === start.full) {
       chip.classList.add("selected");
     }
-    if (available === false) {
+    if (available === false || is_between) {
       chip.classList.add("disabled");
     }
     chip.innerHTML = `${start_date.format("hh:mm A")} to ${end_date.format(
@@ -271,16 +273,22 @@
 
   function handleTimeSlotSelected(start) {
     selectedTimeSlot = start;
-    fetchSlots();
+    fetchSlots(true);
     updateSelectionDisplay();
   }
 
-  async function fetchSlots() {
-    let result = await fetch(
-      "/patient/get_slots?hospital_id={{ hospital_id }}&doctor_id={{ doctor_id }}&date=" +
-        selectedDate.format("YYYY-MM-DD")
-    );
-    result = await result.json();
+  async function fetchSlots(noFetch = false) {
+    result = [];
+    if (!noFetch) {
+      result = await fetch(
+        "/patient/get_slots?hospital_id={{ hospital_id }}&doctor_id={{ doctor_id }}&date=" +
+          selectedDate.format("YYYY-MM-DD")
+      );
+      result = await result.json();
+      cache = result;
+    } else {
+      result = cache;
+    }
     console.log(result);
     const morningSlotsElement = document.getElementById("morning-slots");
     const noonSlotsElement = document.getElementById("noon-slots");
@@ -313,5 +321,9 @@
       );
     });
   }
+
+  setInterval(() => {
+    fetchSlots(true);
+  }, 2000);
 </script>
 {% endblock script %}

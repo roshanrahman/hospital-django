@@ -1,16 +1,20 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from hospital.models import Hospital
 from appointment.models import Appointment
+from doctor.models import SharedDocument
 from specializations.models import Specialization
 from users.models import UserProfile
 from helpers.email import send_appointment_cancellation_email, send_appointment_confirmation_email
 from helpers.common import redirect_to_correct_account
 from helpers.search import search_results, get_data
-from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments
+from helpers.appointments import get_slots, get_today_appointments, get_upcoming_appointments, is_ongoing
+from patient.models import Document
 from datetime import datetime, timedelta
+from django.utils import timezone
+from helpers.firebase import upload_file_to_firebase
 
 
 def delete_appointment_session(request):
@@ -100,10 +104,19 @@ def payment(request):
 def patient_appointments(request):
     if redirect_to_correct_account(request, 'patient'):
         return redirect('app:index')
-    appointments = Appointment.objects.filter(patient_id=request.user.id)
+    status = request.GET.get('status', 'all')
+    if status not in ('pending', 'cancelled', 'completed'):
+        status = 'all'
+    appointments = []
+    if status == 'all':
+        appointments = Appointment.objects.filter(patient_id=request.user.id)
+    else:
+        appointments = Appointment.objects.filter(
+            patient_id=request.user.id, appointment_status=status)
     appointments_list = []
     search_query = request.GET.get('search')
     sort = request.GET.get('sort')
+    appointments = appointments.order_by('-time_slot')
     if(sort == 'latest'):
         appointments = appointments.order_by('-time_slot')
     elif(sort == 'oldest'):
@@ -118,10 +131,15 @@ def patient_appointments(request):
         {appointment.doctor.last_name}
         {appointment.appointment_status}
         '''
+        ongoing = False
         if(search_query and search_query.lower() not in searchable_string.lower()):
             continue
+        if appointment.appointment_status == 'pending':
+            ongoing = is_ongoing(appointment.time_slot,
+                                 appointment.at_hospital.session_duration)
         appointments_list.append({
             'id': appointment.id,
+            'ongoing':  ongoing,
             'appointment_status': appointment.appointment_status,
             'with_specialization': appointment.with_specialization,
             'doctor': appointment.doctor,
@@ -138,6 +156,7 @@ def patient_appointments(request):
         context['search'] = search_query
     if(sort):
         context['sort'] = sort
+    context['status'] = status
     return render(request, 'patient/appointments.html', context)
 
 
@@ -207,20 +226,31 @@ def make_appointment(request):
         return redirect('app:index')
     if(redirect_if_no_session(request)):
         return redirect_if_no_session(request)
+    date = request.session['booking']['date']
+    date_obj = datetime.strptime(date, '%Y-%m-%d %H:%M')
+    current_date = datetime.now() + timedelta(hours=5, minutes=30)
+    print(date_obj.time())
+    print(current_date.time())
+    if date_obj.time() < current_date.time():
+        messages.error(request, 'Invalid date')
+        return redirect('app:index')
     patient_id = request.user.id
     doctor_id = request.session['booking']['doctor_id']
     hospital_id = request.session['booking']['hospital_id']
     specialization_id = request.session['booking']['specialization_id']
-    date = request.session['booking']['date']
-    Appointment.objects.create(
-        with_specialization=Specialization.objects.get(
-            pk=int(specialization_id)),
-        doctor=UserProfile.objects.get(pk=int(doctor_id)),
-        patient=UserProfile.objects.get(pk=int(patient_id)),
-        at_hospital=Hospital.objects.get(pk=int(hospital_id)),
-        time_slot=date,
-        notes=''
-    )
+    try:
+        Appointment.objects.create(
+            with_specialization=Specialization.objects.get(
+                pk=int(specialization_id)),
+            doctor=UserProfile.objects.get(pk=int(doctor_id)),
+            patient=UserProfile.objects.get(pk=int(patient_id)),
+            at_hospital=Hospital.objects.get(pk=int(hospital_id)),
+            time_slot=date,
+            notes=''
+        )
+    except Exception:
+        messages.error(request, 'The time slot is not available')
+        return redirect('app:index')
     with_specialization = Specialization.objects.get(
         pk=int(specialization_id))
     doctor = UserProfile.objects.get(pk=int(doctor_id))
@@ -284,8 +314,113 @@ def appointment_details(request, appointment_id=None):
         if appointment.appointment_status == 'pending':
             context['allow_actions'] = True
         context['appointment'] = appointment
+        context['ongoing'] = is_ongoing(appointment.time_slot,
+                                        appointment.at_hospital.session_duration)
 
     except Exception as e:
         print(e)
         return redirect('app:patient:patient_appointments')
     return render(request, 'patient/appointment_detail.html', context)
+
+
+def patient_documents(request):
+    documents = Document.objects.filter(patient=request.user)
+    context = dict()
+    documents_list = list()
+    for document in documents:
+        documents_list.append({
+            'id': document.id,
+            'title': document.title,
+            'url': document.url,
+            'shared_count': SharedDocument.objects.filter(shared_document=document).count()
+        })
+    context['documents'] = documents_list
+    return render(request, 'patient/documents.html', context)
+
+
+def patient_document_details(request, document_id):
+    document = get_object_or_404(Document, pk=document_id)
+    context = dict()
+    context['document'] = document
+    shared_documents = SharedDocument.objects.filter(
+        shared_document=document)
+    context['shared_documents'] = shared_documents
+    return render(request, 'patient/document_detail.html', context)
+
+
+def patient_documents_add(request):
+    if request.method == "POST":
+        title = request.POST.get('title', None)
+        file = request.FILES
+        url = upload_file_to_firebase(file.get('file'))
+        if(not title or not file):
+            messages.error(request, 'Missing parameters to add document')
+            return redirect('app:patient:add_document')
+        if(not url):
+            messages.error(
+                request, 'There was an error trying to upload your document. Please try again.')
+            return redirect('app:patient:add_document')
+        document = Document(
+            title=title,
+            url=url,
+            patient=request.user
+        )
+        document.save()
+        messages.success(request, 'Document added successfully')
+        return redirect('app:patient:document_details', document_id=document.id)
+    return render(request, 'patient/add_document.html')
+
+
+def patient_documents_delete(request):
+    document_id = request.POST.get('document_id')
+    document = get_object_or_404(Document, pk=document_id)
+    document.delete()
+    messages.success(request, 'Document deleted.')
+    return redirect('app:patient:documents')
+
+
+def get_doctor_emails(request):
+    query = request.GET.get('query', None)
+    if not query:
+        return JsonResponse({
+            'emails': []
+        })
+    email_list = list()
+    doctors = UserProfile.objects.filter(user_type='doctor', account_status='active') & (UserProfile.objects.filter(email__icontains=query) | UserProfile.objects.filter(
+        first_name__icontains=query) | UserProfile.objects.filter(last_name__icontains=query))
+    for doctor in doctors:
+        email_list.append(doctor.email)
+    return JsonResponse(
+        {'emails': sorted(email_list)}
+    )
+
+
+def share_documents(request):
+    email = request.POST.get('email', None)
+    password = request.POST.get('password', None)
+    document_id = request.POST.get('document_id', None)
+    print(email)
+    try:
+        doctor = UserProfile.objects.get(email=email)
+        shared_document = SharedDocument(
+            doctor=doctor,
+            shared_document_id=document_id,
+            password=password
+        )
+        shared_document.save()
+    except Exception as e:
+        print(e)
+        messages.error(
+            request, 'Could not find a doctor with the email address you provided')
+        return redirect('app:patient:document_details', document_id=document_id)
+    messages.success(request, f'Document shared with Dr. {doctor.first_name}')
+    return redirect('app:patient:document_details', document_id=document_id)
+
+
+def delete_shared_document(request):
+    shared_document_id = request.POST.get('shared_document_id', None)
+    shared_document = get_object_or_404(SharedDocument, pk=shared_document_id)
+    document_id = shared_document.shared_document.id
+    shared_document.delete()
+    messages.success(request, 'The sharing has been removed')
+    return redirect('app:patient:document_details', document_id=document_id)

@@ -45,7 +45,19 @@
                   {% endif %}
                     "
                   >
-                    {{appointment.appointment_status | title }}
+                    
+                  {% if  appointment.appointment_status == 'pending' %}
+                  
+                  {% if appointment.ongoing %}
+                  {{ appointment.ongoing.status | title }}
+                  {% else %}
+                  Scheduled
+                  {% endif %}
+                    
+                  {% else %}
+                  {{appointment.appointment_status | title }}
+                  {% endif %}
+                      
                   </div>
               </div>
             </div>
@@ -182,7 +194,17 @@
                   {% endif %}
                     "
                   >
-                    {{appointment.appointment_status | title }}
+                  {% if  appointment.appointment_status == 'pending' %}
+                  
+                  {% if appointment.ongoing %}
+                  {{ appointment.ongoing.status | title }}
+                  {% else %}
+                  Scheduled
+                  {% endif %}
+                    
+                  {% else %}
+                  {{appointment.appointment_status | title }}
+                  {% endif %}
                   </div>
                 </div>
               </div>
@@ -295,7 +317,7 @@
   var selectedItemId = "doctor-dashboard";
   function gotoAppointmentDetail(appointmentId) {
     appointmentId = Number(appointmentId);
-    window.open(`{% url 'app:doctor:doctor_appointments' %}/${appointmentId}`); 
+    location.href = (`{% url 'app:doctor:doctor_appointments' %}/${appointmentId}`); 
   }
 </script>
 

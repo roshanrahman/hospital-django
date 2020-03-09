@@ -95,7 +95,7 @@
   });
 
   function enableForm(status) {
-    const formElements = document.querySelectorAll("input");
+    const formElements = document.querySelectorAll("input, select, textarea");
     formElements.forEach(element => {
       if (element.name == "email") return;
       if (status) {

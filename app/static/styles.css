@@ -1,6 +1,10 @@
 @import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,600,700,900&display=swap");
 @import "./buttons.css";
 @import "./colors.css";
+
+/* * {
+  transition: all 0.13s ease-in-out !important;
+} */
 .alert {
   display: flex;
   justify-content: space-between;
@@ -68,7 +72,8 @@ form {
   flex-direction: column;
 }
 
-.field > input {
+.field > input,
+textarea {
   font-size: 18px;
   padding: 8px;
   margin-top: 8px;
@@ -635,12 +640,14 @@ span.type {
 }
 
 .modal-container {
-  position: absolute;
+  position: fixed;
+  overflow-y: hidden;
   z-index: 10000;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.363);
   display: flex;
   justify-content: center;
@@ -695,4 +702,70 @@ span.type {
   font-size: 1.5em;
   text-transform: uppercase;
   color: white;
+}
+
+#reason-text-field {
+  padding: 16px;
+  font-size: 1.2em;
+}
+
+.hidden {
+  display: none;
+}
+
+.doctors-note {
+  background-color: rgba(241, 248, 243, 0.685);
+  border: 2px solid rgba(0, 128, 0, 0.178);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.doctor-only {
+  display: none;
+}
+
+/* a {
+  border-radius: 16px;
+  border: 1.3px solid rgba(0, 0, 255, 0.178);
+  background-color: rgba(0, 0, 255, 0.055);
+  padding: 4px 20px;
+  display: inline-block;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+a:hover {
+  color: black;
+  border: 1.3px solid rgba(0, 0, 255, 0.712);
+} */
+
+.progress-bar {
+  width: 100%;
+  height: 32px;
+  background: #e3e3e3;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: 0.3s all cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.progress-bar.fill {
+  width: 0%;
+  border-radius: 0px;
+  background: #008bd1;
+}
+
+.no-underline,
+.no-underline > * {
+  text-decoration: none;
+}
+
+h4.type {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 500;
+}
+
+iframe {
+  width: 100%;
+  height: 100vh;
 }
