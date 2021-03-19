@@ -10,7 +10,7 @@ django-oauth-toolkit==1.2.0
 django-rest-framework==0.1.0
 -e git://github.com/makinacorpus/django-safedelete.git@3202c23c509f748b700c4ac8b2f9f3f4318ddefa#egg=django_safedelete
 django-softdelete==0.9.0
-djangorestframework==3.11.0
+djangorestframework==3.11.2
 dodgy==0.2.1
 entrypoints==0.3
 flake8==3.7.9
